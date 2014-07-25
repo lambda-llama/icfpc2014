@@ -1,0 +1,14 @@
+LDC 0
+LDF 3
+AP 1
+LD 0 0   ; 4
+SEL 7 10  ; 5
+CONS     ; 6
+RTN
+LDC 1    ; 6
+LDC 1    ; 7
+JOIN     ; 9
+LDC 0    ; 10
+LDC 3    ; 11
+JOIN
+
