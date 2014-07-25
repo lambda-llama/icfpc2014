@@ -1,3 +1,5 @@
-val compile : Types.expr -> Types.instruction list
+type code = Types.instruction list
 
-val assemble : Types.instruction list -> string
+val compile : Types.expr -> code
+
+val assemble : code -> string
