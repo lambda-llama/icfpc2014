@@ -18,7 +18,8 @@ Flag strict
 Library lm
   Path:              lib_src
   CompiledObject:    best
-  Modules:           Types
+  Modules:           Types, 
+                     Compiler
   if flag(strict)
     NativeOpt:       -w @a -warn-error -a
     ByteOpt:         -w @a -warn-error -a
@@ -28,3 +29,4 @@ Executable lm
   MainIs:             main.ml
   CompiledObject:     best
   Install:            true
+  BuildDepends:       lm
