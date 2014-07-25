@@ -40,4 +40,7 @@ type expr =
   | Fn of expr
   | If of expr * expr * expr
   | Arg of int
+  | Eq of expr * expr
+  | Gt of expr * expr
+  | Gte of expr * expr
   (* | Call of expr * expr list *)

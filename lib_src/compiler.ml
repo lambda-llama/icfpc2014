@@ -20,6 +20,9 @@ let rec compile_expr expr fns =
   | Mul (e1, e2)  -> bin_op e1 e2 MUL
   | Div (e1, e2)  -> bin_op e1 e2 DIV
   | Cons (e1, e2) -> bin_op e1 e2 CONS
+  | Eq (e1, e2)   -> bin_op e1 e2 CEQ
+  | Gt (e1, e2)   -> bin_op e1 e2 CGT
+  | Gte (e1, e2)  -> bin_op e1 e2 CGTE
   | Arg i -> [LD (0, i)], fns
   | Fn e ->
     let id = uid() in
@@ -34,13 +37,13 @@ let rec compile_expr expr fns =
     [LABEL true_addr :: true_code @ [JOIN]] @
     [LABEL false_addr :: false_code @ [JOIN]] @ f3
 
+
 and compile_func id expr fns =
   let code, fns' = compile_expr expr fns in
   (LABEL id :: code @ [RTN]) :: fns'
 
 let compile expr =
-  let (code, fns) = compile_expr expr []
-  in
+  let (code, fns) = compile_expr expr [] in
   code @ [RTN] @ List.concat fns
 
 let rec mk_addr_map instructions map addr =
@@ -54,8 +57,8 @@ let rec mk_addr_map instructions map addr =
 let rec assemble_rec instructions address_map =
   let resolve_addr addr = Hashtbl.find address_map addr in
   match instructions with
-  |[] -> ""
-  |(x::xs) ->
+  | [] -> ""
+  | (x::xs) ->
     let cmd = match x with
     | LDC c -> sprintf "LDC %d" c
     | ADD -> "ADD"
