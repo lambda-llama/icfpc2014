@@ -6,7 +6,7 @@ Authors:        Aleksey Kladov,
                 Sergei Lebedev,
                 Pavel Yakovlev
 License:        MIT
-Plugins:        META (0.4), StdFiles (0.4), DevFiles (0.4)
+Plugins:        META (0.4), DevFiles (0.4)
 Homepage:       https://github.com/lambda-llama/icfpc2014
 OCamlVersion:   >= 4.0.1
 BuildTools:     ocamlbuild
@@ -18,7 +18,7 @@ Flag strict
 Library lm
   Path:              lib_src
   CompiledObject:    best
-  Modules:           Types, 
+  Modules:           Types,
                      Compiler
   if flag(strict)
     NativeOpt:       -w @a -warn-error -a
