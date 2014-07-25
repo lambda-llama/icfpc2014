@@ -28,7 +28,14 @@ type instruction =
   | ST of int * int          (* store to env *)
   | DBG          (* printf debugging *)
   | BRK          (* breakpoint debugging *)
+  | LABEL of address
 
 type expr =
   | Const of int
   | Add of expr * expr
+  | Sub of expr * expr
+  | Mul of expr * expr
+  | Div of expr * expr
+  | Cons of expr * expr
+  | Fn of expr
+  | If of expr * expr * expr

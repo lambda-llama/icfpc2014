@@ -1,8 +1,7 @@
 open Types
 open Compiler
 
-let e = Add (Const 92, Const 1);;
+let e =  Cons (Const 0, Fn (Cons (Const 0, Const 1)))
 
-let instr = compile e
 
-let () = instr |> assemble |> print_endline
+let () = e |> assemble |> print_endline
