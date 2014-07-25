@@ -1,4 +1,4 @@
-ocamlfind="/Users/superbobry/.opam/system/bin/ocamlfind"
+ocamlfind="/Users/pavel/.opam/system/bin/ocamlfind"
 ocamlc="/usr/local/bin/ocamlc.opt"
 ocamlopt="/usr/local/bin/ocamlopt.opt"
 ocamlbuild="/usr/local/bin/ocamlbuild"
