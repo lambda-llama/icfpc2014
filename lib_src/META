@@ -1,0 +1,11 @@
+# OASIS_START
+# DO NOT EDIT (digest: 50f664eb6b0211a0cee49658301567fc)
+version = "2014"
+description = "ICFPC"
+archive(byte) = "lm.cma"
+archive(byte, plugin) = "lm.cma"
+archive(native) = "lm.cmxa"
+archive(native, plugin) = "lm.cmxs"
+exists_if = "lm.cma"
+# OASIS_STOP
+
