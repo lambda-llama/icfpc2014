@@ -1,3 +1,6 @@
 _build
+setup.data
+_oasis
+_tags
 *.native
 *.log
