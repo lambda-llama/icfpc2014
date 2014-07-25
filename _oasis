@@ -2,9 +2,9 @@ OASISFormat:    0.4
 Name:           lambda-man
 Version:        2014
 Synopsis:       ICFPC
-Authors:        Aleksey Kladov,
-                Sergei Lebedev,
-                Pavel Yakovlev
+Authors:        Aleksey Kladov <aleksey.kladov@gmail.com>,
+                Sergei Lebedev <superbobry@gmail.com>,
+                Pavel Yakovlev <zhmactep@gmail.com>
 License:        MIT
 Plugins:        META (0.4), DevFiles (0.4)
 Homepage:       https://github.com/lambda-llama/icfpc2014
@@ -23,10 +23,11 @@ Library lm
   if flag(strict)
     NativeOpt:       -w @a -warn-error -a
     ByteOpt:         -w @a -warn-error -a
+  BuildDepends:      core_kernel
 
 Executable lm
-  Path:               bin_src
-  MainIs:             main.ml
-  CompiledObject:     best
-  Install:            true
-  BuildDepends:       lm
+  Path:              bin_src
+  MainIs:            main.ml
+  CompiledObject:    best
+  Install:           true
+  BuildDepends:      lm
