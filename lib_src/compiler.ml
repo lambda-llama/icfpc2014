@@ -20,6 +20,7 @@ let rec compile_expr expr fns =
   | Mul (e1, e2)  -> bin_op e1 e2 MUL
   | Div (e1, e2)  -> bin_op e1 e2 DIV
   | Cons (e1, e2) -> bin_op e1 e2 CONS
+  | Arg i -> [LD (0, i)], fns
   | Fn e ->
     let id = uid() in
     let fns' = compile_func id e fns in
@@ -65,6 +66,7 @@ let rec assemble_rec instructions address_map =
     | RTN -> "RTN"
     | JOIN -> "JOIN"
     | LABEL _ -> ""
+    | LD (i, j) -> sprintf "LD %d %d" i j
     | SEL (addr1, addr2) ->
       sprintf "SEL %d %d" (resolve_addr addr1) (resolve_addr addr2)
     | LDF address -> sprintf "LDF %d" (resolve_addr address)

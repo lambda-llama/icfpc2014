@@ -39,3 +39,5 @@ type expr =
   | Cons of expr * expr
   | Fn of expr
   | If of expr * expr * expr
+  | Arg of int
+  (* | Call of expr * expr list *)

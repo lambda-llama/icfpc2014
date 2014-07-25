@@ -1,7 +1,14 @@
 open Types
 open Compiler
 
-let e =  Cons (Const 0, Fn (Cons (Const 0, Const 1)))
+let initial = Const 0
 
+let step = Fn (If (Arg 0,
+                  Cons (Const 0, Const 1),
+                  Cons (Const 1, Const 3)))
 
-let () = e |> assemble |> print_endline
+let e =  Cons (initial, step)
+
+let instr = compile e
+
+let () = instr |> assemble |> print_endline
