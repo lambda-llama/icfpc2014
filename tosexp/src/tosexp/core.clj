@@ -26,9 +26,18 @@
     (list 'Cons (transform arg) (apply list-macro args))
     (list (transform arg) (transform 0))))
 
+(defn let-macro [args body]
+  (let [args (partition 2 args)
+        ks (map first args)
+        vs (map second args)]
+    (list 'Call
+          (list 'Fn (apply list ks) (transform body))
+          (apply list (map transform vs)))))
+
 (def macroses
   {'list list-macro
    'not (fn [arg] (- 1 arg))
+   'let let-macro
    'inc (fn [a] (transform (list '+ a 1)))
    'dec (fn [a] (transform (list '- a 1)))})
 
