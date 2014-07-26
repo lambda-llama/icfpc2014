@@ -31,7 +31,7 @@ type state = {
 
 let initial_state = {
   functions = [];
-  env = {vars = []; parent = None}
+  env = {vars = ["world"; "undocumented"]; parent = None}
 }
 
 let add_fn label code ret {functions; env} =
