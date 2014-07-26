@@ -28,7 +28,11 @@
     (list 'Cons (transform arg) (transform 0))))
 
 (defn let-macro [args body]
-  (list 'Letrec (partition 2 args) body))
+  (let [args (partition 2 args)
+        ks (map first args)
+        vs (map (comp transform last) args)
+        args (apply list (map vector ks vs))]
+    (list 'Letrec args (transform body))))
 
 (def macroses
   {'list list-macro
