@@ -11,9 +11,9 @@
     (lookup-in list 0)))
 
 (def UP 0)
-(def LEFT 1)
+(def RIGHT 1)
 (def DOWN 2)
-(def RIGHT 3)
+(def LEFT 3)
 
 (def DIRECTIONS (list UP RIGHT DOWN LEFT))
 
@@ -28,7 +28,7 @@
 (defn world-map [world] (head world))
 (defn lambda-man [world] (nth world 2))
 (defn direction [actor] (nth actor 3))
-(defn location [actor] (nth actor 3))
+(defn location [actor] (nth actor 2))
 (defn at [world-map x y] (nth (nth (world-map) y) x))
 
 (defn neighbour [pos direction]
@@ -50,7 +50,7 @@
 
 (defn back [direction]
   (if (= direction UP)
-    RIGHT
+    LEFT
     (let [pos (lookup DIRECTIONS direction)]
       (nth DIRECTIONS (dec pos)))))
 
