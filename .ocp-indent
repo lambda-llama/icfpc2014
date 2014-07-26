@@ -1,4 +1,4 @@
 # Indent after `match/try with` or `function`:
 #    match foo with
 #    ^^| _ -> bar
-with = 2
+with = 0
