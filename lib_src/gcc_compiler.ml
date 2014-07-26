@@ -1,8 +1,8 @@
 open Core_kernel.Std
 
-open Types
+open Gcc_types
 
-type code = Types.instruction list
+type code = instruction list
 
 type env = {
   vars   : var list;

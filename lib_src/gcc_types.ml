@@ -39,7 +39,7 @@ let is_phony = function
   | LABEL _ | COMMENT _ -> true
   | _ -> false
 
-type var = string
+type var = string with sexp
 
 type expr =
   | Const of int
@@ -57,4 +57,4 @@ type expr =
   | Var of var
   | Car of expr
   | Cdr of expr
-  (* | Call of expr * expr list *)
+with sexp

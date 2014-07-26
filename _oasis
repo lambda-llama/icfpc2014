@@ -18,19 +18,22 @@ Flag strict
 Library llama_man
   Path:              lib_src
   CompiledObject:    best
-  Modules:           Types,
-                     Compiler
+  Modules:           Gcc_types,
+                     Gcc_compiler
   if flag(strict)
     NativeOpt:       -w @a -warn-error -a
     ByteOpt:         -w @a -warn-error -a
   BuildDepends:      core_kernel
+                     sexplib,
+                     sexplib.syntax,
 
 Executable gcc
   Path:              bin_src
-  MainIs:            main.ml  # rename?
+  MainIs:            gcc.ml
   CompiledObject:    best
   Install:           true
-  BuildDepends:      llama_man
+  BuildDepends:      llama_man,
+                     sexplib
 
 Executable test_runner
   Path:               lib_test
@@ -39,5 +42,5 @@ Executable test_runner
   Custom:             true
   CompiledObject:     best
   Install:            false
-  BuildDepends:       llama_man
-                    , oUnit (>= 2.0.0)
+  BuildDepends:       llama_man,
+                      oUnit (>= 2.0.0)

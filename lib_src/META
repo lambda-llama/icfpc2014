@@ -1,8 +1,8 @@
 # OASIS_START
-# DO NOT EDIT (digest: 77f81335e4d057100d68e2545a139853)
+# DO NOT EDIT (digest: 303cc0010832e896a89c08342b8777ac)
 version = "2014"
 description = "ICFPC"
-requires = "core_kernel"
+requires = "core_kernel sexplib sexplib.syntax "
 archive(byte) = "llama_man.cma"
 archive(byte, plugin) = "llama_man.cma"
 archive(native) = "llama_man.cmxa"

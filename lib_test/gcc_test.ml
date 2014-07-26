@@ -2,12 +2,13 @@ open Core_kernel.Std
 
 open OUnit2
 
-open Types
-open Compiler
-open Stdlib
+open Gcc_types
+
+let scope name var expr = Call (Fn ([name], expr), [var])
 
 
 let test_gcc ~ast ~path =
+  let open Gcc_compiler in
   let asm      = compile ast |> assemble
   and expected = In_channel.read_all path
   in assert_equal ~printer:(sprintf "%S") expected asm
