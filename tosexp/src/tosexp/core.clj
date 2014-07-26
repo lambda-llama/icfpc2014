@@ -1,20 +1,68 @@
 (ns tosexp.core
   (:use [clojure.core.match :only (match)])
-  (:require [clojure.walk :as w]))
+  (:require [clojure.walk :as w])
+  (:gen-class))
+
+(declare transform)
+
+(def un-ops
+  {'head 'Car
+   'tail 'Cdr})
+
+(def bin-ops
+  {'+ 'Add
+   '- 'Sub
+   '* 'Mul
+   '/ 'Div
+   '= 'Eq
+   '< 'Gt
+   '<= 'Gte
+   '> [:inverted 'Gt]
+   '>= [:inverted 'Gte]
+   'if 'If
+   'pair 'Cons})
+
+(defn list-macro [arg & args]
+  (if (seq args)
+    (list 'Cons (transform arg) (apply list-macro args))
+    (list (transform arg) (transform 0))))
+
+(def macroses
+  {'list list-macro})
 
 (defn transform [form]
   (match
    [(if (list? form) (vec form) form)]
 
-   [['+ a b]] (list 'Add (transform a) (transform b))
-   [(a :guard number?)] (list 'Const a)
-   ))
+   [[(op :guard un-ops) a]]
+   (list (un-ops op) a)
 
-(defn mytest []
-  (transform
-   '(+ 1 2)))
+   [[(op :guard bin-ops) a b]]
+   (if (symbol? (bin-ops op))
+     (list (bin-ops op) (transform a) (transform b))
+     (if (and (vector? (bin-ops op))
+              (= :inverted (first (bin-ops op))))
+       (list (second (bin-ops op)) (transform b) (transform a))
+       (throw "bad binop")))
 
-(defn foo
-  "I don't do a whole lot."
-  [x]
-  (println x "Hello, World!"))
+   [['fn (args :guard vector?) body]]
+   (list 'Fn (apply list args) (transform body))
+
+   [['if guard t f]]
+   (list 'If guard t f)
+
+   [[(macros :guard macroses) & args]]
+   (apply (macroses macros) args)
+
+   [(a :guard number?)]
+   (list 'Const a)
+
+   [(a :guard symbol?)]
+   (list 'Var a)))
+
+(defn -main
+  [& args]
+  (-> (slurp *in*)
+      read
+      transform
+      println))
