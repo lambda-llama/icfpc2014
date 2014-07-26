@@ -24,6 +24,6 @@ let test_goto test_ctx =
 
 
 let test = "GCC" >::: [
-    "local.gcc" >:: test_local
+    "local.gcc" >:: test_local;
     "goto.gcc"  >:: test_goto
   ]
