@@ -108,9 +108,14 @@ let rec assemble_rec instructions address_map =
         | SUB -> "SUB"
         | MUL -> "MUL"
         | DIV -> "DIV"
+        | CEQ -> "CEQ"
+        | CGT -> "CGT"
+        | CGTE -> "CGTE"
         | CONS -> "CONS"
         | RTN -> "RTN"
         | JOIN -> "JOIN"
+        | CAR  -> "CAR"
+        | CDR  -> "CDR"
         | LABEL _ -> ""
         | LD (i, j) -> sprintf "LD %d %d" i j
         | SEL (addr1, addr2) ->
