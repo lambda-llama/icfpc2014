@@ -21,8 +21,8 @@ Library llama_man
   Modules:           Gcc_types,
                      Gcc_compiler
   if flag(strict)
-    NativeOpt:       -w @a -warn-error -a
-    ByteOpt:         -w @a -warn-error -a
+    NativeOpt:       -w @a-4 -warn-error -a
+    ByteOpt:         -w @a-4 -warn-error -a
   BuildDepends:      core_kernel
                      sexplib,
                      sexplib.syntax,

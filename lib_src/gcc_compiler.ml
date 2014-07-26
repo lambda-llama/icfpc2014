@@ -94,39 +94,8 @@ and compile_func id formals expr {functions; env} =
   add_fn id code RTN {functions = fns1; env=env}
 
 let compile expr =
-  let (code, {functions}) = compile_expr expr initial_state in
-  code @ [RTN] @ List.concat functions
-
-let rec assemble_rec instructions address_map =
-  let resolve addr = Hashtbl.find_exn address_map addr in
-  match instructions with
-    | [] -> ""
-    | (x :: xs) ->
-      let cmd = match x with
-        | LDC c -> sprintf "LDC %d" c
-        | ADD -> "ADD"
-        | SUB -> "SUB"
-        | MUL -> "MUL"
-        | DIV -> "DIV"
-        | CEQ -> "CEQ"
-        | CGT -> "CGT"
-        | CGTE -> "CGTE"
-        | CONS -> "CONS"
-        | RTN -> "RTN"
-        | JOIN -> "JOIN"
-        | CAR  -> "CAR"
-        | CDR  -> "CDR"
-        | LABEL _ -> ""
-        | COMMENT c -> sprintf "; %s" c
-        | LD (i, j) -> sprintf "LD %d %d" i j
-        | SEL (addr1, addr2) ->
-          sprintf "SEL %d %d" (resolve addr1) (resolve addr2)
-        | LDF addr -> sprintf "LDF %d" (resolve addr)
-        | AP n -> sprintf "AP %d" n
-      in
-
-      let indent = if cmd = "" then "" else "  " in
-      indent ^ cmd ^ sprintf "\n%s" (assemble_rec xs address_map)
+  let (code, state) = compile_expr expr initial_state in
+  code @ [RTN] @ List.concat state.functions
 
 let assemble instructions =
   let address_map = Hashtbl.Poly.create ~size:4 () in
@@ -134,7 +103,35 @@ let assemble instructions =
       ~init:0
       ~f:(fun acc inst->
           begin match inst with
-          |LABEL l -> Hashtbl.add_exn address_map ~key:l ~data:acc
+          | LABEL l -> Hashtbl.add_exn address_map ~key:l ~data:acc
           | _ -> ()
           end; if is_phony inst then acc else succ acc)
-  in assemble_rec instructions address_map
+  in
+
+  let resolve = Hashtbl.find_exn address_map in
+  String.concat ~sep:"\n" (List.map instructions ~f:(fun instruction ->
+      let cmd = match instruction with
+      | LDC c -> sprintf "LDC %d" c
+      | ADD -> "ADD"
+      | SUB -> "SUB"
+      | MUL -> "MUL"
+      | DIV -> "DIV"
+      | CEQ -> "CEQ"
+      | CGT -> "CGT"
+      | CGTE -> "CGTE"
+      | CONS -> "CONS"
+      | RTN -> "RTN"
+      | JOIN -> "JOIN"
+      | CAR  -> "CAR"
+      | CDR  -> "CDR"
+      | LABEL _ -> ""
+      | COMMENT c -> "; " ^ c
+      | LD (i, j) -> sprintf "LD %d %d" i j
+      | SEL (addr1, addr2) -> sprintf "SEL %d %d" (resolve addr1) (resolve addr2)
+      | LDF addr -> sprintf "LDF %d" (resolve addr)
+      | AP n -> sprintf "AP %d" n
+      | _ ->
+        let sexp = Sexp.to_string (sexp_of_instruction instruction) in
+        failwithf "unsupported instruction %s" sexp ()
+      and indent = if is_phony instruction then "" else "  " in
+      indent ^ cmd))

@@ -1,5 +1,5 @@
 (* OASIS_START *)
-(* DO NOT EDIT (digest: fd8343ab67f6160f91dd1cd139212fcc) *)
+(* DO NOT EDIT (digest: eb7b55c1781ac6f4b205bd286bab5192) *)
 module OASISGettext = struct
 (* # 22 "src/oasis/OASISGettext.ml" *)
 
@@ -603,37 +603,37 @@ let package_default =
             [
                (OASISExpr.EBool true, S []);
                (OASISExpr.EFlag "strict",
-                 S [A "-w"; A "@a"; A "-warn-error"; A "-a"])
+                 S [A "-w"; A "@a-4"; A "-warn-error"; A "-a"])
             ]);
           (["oasis_library_llama_man_native"; "ocaml"; "link"; "native"],
             [
                (OASISExpr.EBool true, S []);
                (OASISExpr.EFlag "strict",
-                 S [A "-w"; A "@a"; A "-warn-error"; A "-a"])
+                 S [A "-w"; A "@a-4"; A "-warn-error"; A "-a"])
             ]);
           (["oasis_library_llama_man_byte"; "ocaml"; "ocamldep"; "byte"],
             [
                (OASISExpr.EBool true, S []);
                (OASISExpr.EFlag "strict",
-                 S [A "-w"; A "@a"; A "-warn-error"; A "-a"])
+                 S [A "-w"; A "@a-4"; A "-warn-error"; A "-a"])
             ]);
           (["oasis_library_llama_man_native"; "ocaml"; "ocamldep"; "native"],
             [
                (OASISExpr.EBool true, S []);
                (OASISExpr.EFlag "strict",
-                 S [A "-w"; A "@a"; A "-warn-error"; A "-a"])
+                 S [A "-w"; A "@a-4"; A "-warn-error"; A "-a"])
             ]);
           (["oasis_library_llama_man_byte"; "ocaml"; "compile"; "byte"],
             [
                (OASISExpr.EBool true, S []);
                (OASISExpr.EFlag "strict",
-                 S [A "-w"; A "@a"; A "-warn-error"; A "-a"])
+                 S [A "-w"; A "@a-4"; A "-warn-error"; A "-a"])
             ]);
           (["oasis_library_llama_man_native"; "ocaml"; "compile"; "native"],
             [
                (OASISExpr.EBool true, S []);
                (OASISExpr.EFlag "strict",
-                 S [A "-w"; A "@a"; A "-warn-error"; A "-a"])
+                 S [A "-w"; A "@a-4"; A "-warn-error"; A "-a"])
             ])
        ];
      includes = [("lib_test", ["lib_src"]); ("bin_src", ["lib_src"])]
