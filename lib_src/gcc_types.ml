@@ -2,8 +2,6 @@ open Core_kernel.Std
 
 module Address = Unique_id.Int(Unit)
 
-type address = Address.t
-
 type instruction =
   | LDC of int               (* load constant *)
   | LD of int * int          (* load from environment *)
@@ -18,22 +16,23 @@ type instruction =
   | CONS         (* allocate a CONS cell *)
   | CAR          (* first *)
   | CDR          (* second *)
-  | SEL of address * address         (* conditional branch *)
+  | SEL of Address.t * Address.t         (* conditional branch *)
   | JOIN         (* return from branch *)
-  | LDF of address          (* load function *)
+  | LDF of Address.t          (* load function *)
   | AP of int          (* call function *)
   | RTN           (* return from function call *)
   | DUM of int         (* create empty env frame *)
   | RAP of int         (* recursive environment call function *)
   | STOP         (* terminate co-processor execution *)
-  | TSEL of address * address         (* tail-call conditional branch *)
+  | TSEL of Address.t * Address.t         (* tail-call conditional branch *)
   | TAP  of int        (* tail-call function *)
   | TRAP of int        (* recursive env tail-call function *)
   | ST of int * int          (* store to env *)
   | DBG          (* printf debugging *)
   | BRK          (* breakpoint debugging *)
-  | LABEL of address
+  | LABEL of Address.t
   | COMMENT of string
+with sexp_of
 
 let is_phony = function
   | LABEL _ | COMMENT _ -> true

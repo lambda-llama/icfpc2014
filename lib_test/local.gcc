@@ -3,9 +3,9 @@
   AP 1
   RTN
 
-  ; x
+; x
   LD 0 0
-  ; x
+; x
   LD 0 0
   ADD
   RTN
