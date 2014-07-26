@@ -28,7 +28,7 @@ type instruction =
   | TAP  of int        (* tail-call function *)
   | TRAP of int        (* recursive env tail-call function *)
   | ST of int * int          (* store to env *)
-  | DBG          (* printf debugging *)
+  | DBUG         (* printf debugging *)
   | BRK          (* breakpoint debugging *)
   | LABEL of Address.t
   | COMMENT of string
@@ -40,6 +40,7 @@ type ident = string with sexp
 
 type expr =
   | Const of int
+  | Debug of expr
   | Add of expr * expr
   | Sub of expr * expr
   | Mul of expr * expr

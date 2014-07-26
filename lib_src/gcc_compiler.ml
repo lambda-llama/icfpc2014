@@ -41,6 +41,9 @@ let rec compile_expr expr state =
     c1 @ c2 @ [op], s2
   in match expr with
     | Const x -> [LDC x], state
+    | Debug e ->
+      let (c1, s1) = compile_expr e state in
+      c1 @ [DBUG], s1
     | Add (e1, e2)  -> bin_op e1 e2 ADD
     | Sub (e1, e2)  -> bin_op e1 e2 SUB
     | Mul (e1, e2)  -> bin_op e1 e2 MUL
@@ -130,6 +133,7 @@ let assemble instructions =
   String.concat ~sep:"\n" (List.map instructions ~f:(fun instruction ->
       let cmd = match instruction with
       | LDC c -> sprintf "LDC %d" c
+      | DBUG -> "DBUG"
       | ADD -> "ADD"
       | SUB -> "SUB"
       | MUL -> "MUL"
