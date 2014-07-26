@@ -2,7 +2,7 @@
 (def LEFT 1)
 (def DOWN 2)
 (def RIGHT 3)
-(def DIRECTIONS [UP RIGTH DOWN LEFT UP RIGHT])
+(def DIRECTIONS [UP RIGTH DOWN LEFT])
 
 
 (def WALL 0)
@@ -41,9 +41,13 @@
           '((succ x), y))))))
 
 (defn next [direction]
-  (nth DIRECTIONS (succ direction)))
+  (if (== direction LEFT)
+    UP
+    (let [pos (lookup DIRECTIONS direction)]
+      (nth DIRECTIONS (succ pos)))))
 
 (defn back [direction]
   (if (== direction UP)
     RIGHT
-    (nth DIRECTIONS (pred direction))))
+    (let [pos (lookup DIRECTIONS direction)]
+      (nth DIRECTIONS (pred pos)))))
