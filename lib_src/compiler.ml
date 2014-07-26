@@ -1,7 +1,6 @@
 open Core_kernel.Std
 
 open Types
-open Printf
 
 type code = Types.instruction list
 
@@ -15,21 +14,15 @@ let push_vars env vars = {
   parent = Some env;
 }
 
-let rec index xs x = match xs with
-  | [] -> None
-  | (y::ys) -> if x = y
-               then Some 0
-               else Option.map (index ys x) succ
-
 let rec lookup {vars; parent} v =
-  match index vars v with
+  match Option.map ~f:fst @@ List.findi vars ~f:(fun _i -> ((=) v)) with
   | Some i -> (0, i)
   | None ->
-     match parent with
-     | None -> failwith "Ouups, udefined variable"
-     | Some env ->
-        let (e, i) = lookup env v in
-        (succ e, i)
+    match parent with
+    | None -> failwithf "udefined variable: %s" v ()
+    | Some env ->
+      let (e, i) = lookup env v in
+      (succ e, i)
 
 type state = {
   functions : code list;
@@ -97,7 +90,7 @@ let rec compile_expr expr state =
 and compile_func id formals expr {functions; env} =
   let e_env = push_vars env formals in
   let e_state = {functions = functions; env = e_env} in
-  let code, {functions = fns1} = compile_expr expr e_state in
+  let code, {functions = fns1; _} = compile_expr expr e_state in
   add_fn id code RTN {functions = fns1; env=env}
 
 let compile expr =
