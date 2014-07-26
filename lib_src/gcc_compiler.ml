@@ -68,15 +68,14 @@ let rec compile_expr expr state =
       let true_addr = Address.create ()
       and false_addr = Address.create () in
       (cond_code @ [SEL (true_addr, false_addr)],
-       add_fn true_addr true_code JOIN s3 |>
-         add_fn false_addr false_code JOIN)
+       add_fn true_addr true_code JOIN s3
+       |> add_fn false_addr false_code JOIN)
     | Call (fn_expr, actuals) ->
-       let (actuals_code, s1) = List.fold_left
-                       actuals
-                       ~init: ([], state)
-                       ~f:(fun (code, state) e ->
-                           let (c, s1) = compile_expr e state in
-                           (code @ c, s1))
+       let (actuals_code, s1) = List.fold_left actuals
+           ~init: ([], state)
+           ~f:(fun (code, state) e ->
+               let (c, s1) = compile_expr e state in
+               (code @ c, s1))
        in
        let (fn_code, s2) = compile_expr fn_expr s1 in
        (actuals_code @ fn_code @ [AP (List.length actuals)], s2)
