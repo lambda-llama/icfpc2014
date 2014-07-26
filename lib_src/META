@@ -1,12 +1,12 @@
 # OASIS_START
-# DO NOT EDIT (digest: 21189e5b56926e6d844e692c32dc399a)
+# DO NOT EDIT (digest: 77f81335e4d057100d68e2545a139853)
 version = "2014"
 description = "ICFPC"
 requires = "core_kernel"
-archive(byte) = "lm.cma"
-archive(byte, plugin) = "lm.cma"
-archive(native) = "lm.cmxa"
-archive(native, plugin) = "lm.cmxs"
-exists_if = "lm.cma"
+archive(byte) = "llama_man.cma"
+archive(byte, plugin) = "llama_man.cma"
+archive(native) = "llama_man.cmxa"
+archive(native, plugin) = "llama_man.cmxs"
+exists_if = "llama_man.cma"
 # OASIS_STOP
 

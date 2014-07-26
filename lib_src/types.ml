@@ -1,4 +1,8 @@
-type address = int
+open Core_kernel.Std
+
+module Address = Unique_id.Int(Unit)
+
+type address = Address.t
 
 type instruction =
   | LDC of int               (* load constant *)
