@@ -19,6 +19,7 @@ Library llama_man
   Path:              lib_src
   CompiledObject:    best
   Modules:           Gcc_types,
+                     Gcc_internals,
                      Gcc_compiler
   if flag(strict)
     NativeOpt:       -w @a-4 -warn-error -a

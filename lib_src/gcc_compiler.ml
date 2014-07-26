@@ -3,7 +3,7 @@ open Core_kernel.Std
 open Gcc_types
 
 type env = {
-  vars   : var list;
+  vars   : ident list;
   parent : env option;
 }
 
@@ -22,15 +22,12 @@ let rec lookup {vars; parent} v =
       let (e, i) = lookup env v in
       (succ e, i)
 
+
 type state = {
   functions : code list;
-  env : env;
+  env       : env
 }
 
-let initial_state = {
-  functions = [];
-  env = {vars = ["world"; "undocumented"]; parent = None}
-}
 
 let add_fn label code ret {functions; env} =
   let wrapped_code = LABEL label :: code @ [ret] in
@@ -83,6 +80,20 @@ let rec compile_expr expr state =
     | Cdr expr ->
       let (tuple_expr, f) = compile_expr expr state in
       (tuple_expr @ [CDR]), f
+    | Letrec (bindings, body) ->
+        let n = List.length bindings in
+        let names = List.map ~f:fst bindings in
+        let rec_env = push_vars state.env names in
+        let rec_state = {functions = state.functions; env = rec_env} in
+        let (vals_code, s1) = List.fold_left bindings
+            ~init: ([], rec_state)
+            ~f:(fun (code, state) (_name, e) ->
+               let (c, s1) = compile_expr e state in
+               (code @ c, s1))
+        in
+        let id = Address.create () in
+        let s2 = compile_func id names body s1 in
+        DUM n :: vals_code @ [LDF id] @ [RAP n], s2
 
 and compile_func id formals expr {functions; env} =
   let e_env = push_vars env formals in
@@ -90,7 +101,12 @@ and compile_func id formals expr {functions; env} =
   let code, {functions = fns1; _} = compile_expr expr e_state in
   add_fn id code RTN {functions = fns1; env=env}
 
-let compile expr =
+let compile ?(globals=[]) expr =
+  let initial_state = {
+    functions = [];
+    env = {vars = ["world"; "undocumented"]; parent = None}
+  } in
+
   let (code, state) = compile_expr expr initial_state in
   code @ [RTN] @ List.concat state.functions
 
@@ -131,6 +147,8 @@ let assemble instructions =
       | SEL (addr1, addr2) -> sprintf "SEL %d %d" (resolve addr1) (resolve addr2)
       | LDF addr -> sprintf "LDF %d" (resolve addr)
       | AP n -> sprintf "AP %d" n
+      | DUM n -> sprintf "DUM %d" n
+      | RAP n -> sprintf "RAP %d" n
       | _ ->
         let sexp = Sexp.to_string (sexp_of_instruction instruction) in
         failwithf "unsupported instruction %s" sexp ()
