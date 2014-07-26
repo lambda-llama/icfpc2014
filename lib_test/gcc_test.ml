@@ -3,9 +3,7 @@ open Core_kernel.Std
 open OUnit2
 
 open Gcc_types
-
-
-let scope name var expr = Call (Fn ([name], expr), [var])
+open Gcc_internals
 
 
 let test_gcc ~ast ~path =

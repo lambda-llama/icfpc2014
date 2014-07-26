@@ -3,7 +3,7 @@ open Core_kernel.Std
 open Gcc_types
 
 type env = {
-  vars   : var list;
+  vars   : ident list;
   parent : env option;
 }
 
@@ -22,15 +22,12 @@ let rec lookup {vars; parent} v =
       let (e, i) = lookup env v in
       (succ e, i)
 
+
 type state = {
   functions : code list;
-  env : env;
+  env       : env
 }
 
-let initial_state = {
-  functions = [];
-  env = {vars = ["world"; "undocumented"]; parent = None}
-}
 
 let add_fn label code ret {functions; env} =
   let wrapped_code = LABEL label :: code @ [ret] in
@@ -104,7 +101,12 @@ and compile_func id formals expr {functions; env} =
   let code, {functions = fns1; _} = compile_expr expr e_state in
   add_fn id code RTN {functions = fns1; env=env}
 
-let compile expr =
+let compile ?(globals=[]) expr =
+  let initial_state = {
+    functions = [];
+    env = {vars = ["world"; "undocumented"]; parent = None}
+  } in
+
   let (code, state) = compile_expr expr initial_state in
   code @ [RTN] @ List.concat state.functions
 

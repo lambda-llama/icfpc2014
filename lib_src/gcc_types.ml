@@ -36,7 +36,7 @@ with sexp_of
 
 type code = instruction list
 
-type var = string with sexp
+type ident = string with sexp
 
 type expr =
   | Const of int
@@ -45,14 +45,16 @@ type expr =
   | Mul of expr * expr
   | Div of expr * expr
   | Cons of expr * expr
-  | Fn of var list * expr
+  | Fn of ident list * expr
   | Call of expr * expr list
-  | Letrec of (var * expr) list * expr
+  | Letrec of (ident * expr) list * expr
   | If of expr * expr * expr
   | Eq of expr * expr
   | Gt of expr * expr
   | Gte of expr * expr
-  | Var of var
+  | Var of ident
   | Car of expr
   | Cdr of expr
 with sexp
+
+type program = ((ident * expr) list) * expr with sexp
