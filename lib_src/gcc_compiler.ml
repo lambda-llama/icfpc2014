@@ -53,6 +53,9 @@ let rec compile_expr expr state =
     | Eq (e1, e2)   -> bin_op e1 e2 CEQ
     | Gt (e1, e2)   -> bin_op e1 e2 CGT
     | Gte (e1, e2)  -> bin_op e1 e2 CGTE
+    | Atom e ->
+      let (c, s) = compile_expr e state in
+      c @ [ATOM], s
     | Fn (formals, e)->
       let id = Address.create () in
       let s1 = compile_func id formals e state in
@@ -142,6 +145,7 @@ let assemble instructions =
       | CEQ -> "CEQ"
       | CGT -> "CGT"
       | CGTE -> "CGTE"
+      | ATOM -> "ATOM"
       | CONS -> "CONS"
       | RTN -> "RTN"
       | JOIN -> "JOIN"

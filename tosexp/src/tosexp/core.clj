@@ -8,7 +8,8 @@
 
 (def un-ops
   {'head 'Car
-   'tail 'Cdr})
+   'tail 'Cdr
+   'atom 'Atom})
 
 (def bin-ops
   {'+ 'Add

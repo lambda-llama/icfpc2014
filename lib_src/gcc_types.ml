@@ -50,6 +50,7 @@ type expr =
   | Call of expr * expr list
   | Letrec of (ident * expr) list * expr
   | If of expr * expr * expr
+  | Atom of expr
   | Eq of expr * expr
   | Gt of expr * expr
   | Gte of expr * expr
