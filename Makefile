@@ -45,4 +45,3 @@ uberjar:
 
 clean-uberjar:
 	rm -r tosexp/target
-	rm tosexp.jar
