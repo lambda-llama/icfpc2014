@@ -1,3 +1,0 @@
-(let ["go" (fn [n] (to (+ n 1)))
-      "to" (fn [n] (go (- n 1)))]
-  (go 92))
