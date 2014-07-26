@@ -25,7 +25,7 @@
 (defn list-macro [arg & args]
   (if (seq args)
     (list 'Cons (transform arg) (apply list-macro args))
-    (list (transform arg) (transform 0))))
+    (list 'Cons (transform arg) (transform 0))))
 
 (defn let-macro [args body]
   (let [args (partition 2 args)
