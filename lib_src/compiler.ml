@@ -123,6 +123,7 @@ let rec assemble_rec instructions address_map =
         | SEL (addr1, addr2) ->
           sprintf "SEL %d %d" (resolve addr1) (resolve addr2)
         | LDF addr -> sprintf "LDF %d" (resolve addr)
+        | AP n -> sprintf "AP %d" n
       in "  " ^ cmd ^ sprintf "\n%s" (assemble_rec xs address_map)
 
 let assemble instructions =

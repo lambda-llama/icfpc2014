@@ -9,9 +9,7 @@ let turn = Fn (["cond"], (If (Var "cond",
                               pair 0 1,
                               pair 1 3)))
 
-let step = Fn (["x"], (If (Var "x",
-                        Cons (Const 0, Const 1),
-                        Cons (Const 1, Const 3))))
+let step = Fn (["x"], Call (turn, [Var "x"]))
 
 let e =  Cons (initial, step)
 
