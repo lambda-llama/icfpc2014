@@ -64,11 +64,11 @@
                 wm (world-map world)
                 loc (location lm)
                 dir (trace (direction lm))
-                t1 (next dir)
-                t2 (back t1)
-                t3 (back t2)
+                t1 (if state (next dir) (back dir))
+                t2 dir
+                t3 (back (back dir))
                 is-free (fn [t] (not (= WALL (at wm (neighbour loc t)))))]
-            (pair state
+            (pair (not state)
                   (if (is-free t1)
                     t1
                     (if (is-free t2)
