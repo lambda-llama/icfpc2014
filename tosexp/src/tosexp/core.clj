@@ -8,8 +8,7 @@
 
 (def un-ops
   {'head 'Car
-   'tail 'Cdr
-   'debug 'Debug})
+   'tail 'Cdr})
 
 (def bin-ops
   {'+ 'Add
@@ -21,7 +20,8 @@
    '<= 'Gte
    '> [:inverted 'Gt]
    '>= [:inverted 'Gte]
-   'pair 'Cons})
+   'pair 'Cons
+   'debug 'Debug})
 
 (defn list-macro [arg & args]
   (if (seq args)
