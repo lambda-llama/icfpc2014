@@ -3,9 +3,6 @@
 
 SETUP = ocaml setup.ml
 
-uberjar:
-	cd tosexp && lein uberjar && cd ..
-
 build: setup.data
 	$(SETUP) -build $(BUILDFLAGS)
 
@@ -42,3 +39,6 @@ configure:
 .PHONY: build doc test all install uninstall reinstall clean distclean configure
 
 # OASIS_STOP
+
+uberjar:
+	cd tosexp && lein uberjar && cd ..
