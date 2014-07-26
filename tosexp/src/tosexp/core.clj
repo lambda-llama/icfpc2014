@@ -46,7 +46,7 @@
    [(if (list? form) (vec form) form)]
 
    [[(op :guard un-ops) a]]
-   (list (un-ops op) a)
+   (list (un-ops op) (transform a))
 
    [[(op :guard bin-ops) a b]]
    (if (symbol? (bin-ops op))
