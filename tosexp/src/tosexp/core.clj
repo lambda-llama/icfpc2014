@@ -1,6 +1,7 @@
 (ns tosexp.core
   (:use [clojure.core.match :only (match)])
   (:require [clojure.walk :as w])
+  (:require [clojure.pprint :as pp])
   (:gen-class))
 
 (declare transform)
@@ -79,4 +80,4 @@
   (-> (slurp (java.io.BufferedReader. *in*))
       read-string
       transform
-      println))
+      pp/pprint))
