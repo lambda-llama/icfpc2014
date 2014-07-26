@@ -1,9 +1,9 @@
 (pair 0
       (fn [state world]
-        (let [nth (fn [list pos]
+        (let [nth (fn [l pos]
                     (if (= pos 0)
-                      (head list)
-                      (nth (tail list) (dec pos))))
+                      (head l)
+                      (nth (tail l) (dec pos))))
               lookup (fn [list elem]
                        (let [lookup-in (fn [l p]
                                          (if (= (head l) elem)
