@@ -28,11 +28,11 @@
     (list 'Cons (transform arg) (transform 0))))
 
 (defn let-macro [args body]
-  (let [args (partition 2 args)
-        ks (map first args)
-        vs (map (comp transform last) args)
-        args (map #(apply list %) (map vector ks vs))]
-    (list 'Letrec args (transform body))))
+  (if (seq args)
+    (let [[k v] (take 2 args)]
+      (list 'Letrec (list (list (transform k) (transform v)))
+            (let-macro (drop 2 args) body)))
+    (transform body)))
 
 (def macroses
   {'list list-macro
@@ -78,20 +78,44 @@
   (match
    [(if (list? form) (vec form) form)]
 
+   [['defn 'main (args :guard #(and (vector? %)
+                                    (= 2 (count %)))) body]]
+   (assoc acc :main
+              {:args args
+               :body body})
+
    [['defn name (args :guard vector?) body]]
-   (conj acc {:type :defn
-              :name name
-              :args (apply list (map transform args))
-              :body (transform body)})
+   (update-in acc [:forms]
+              conj {:type :defn
+                    :name name
+                    :args args
+                    :body body})
 
    [['def name body]]
-   (conj acc {:type :def
-              :name name
-              :body (transform body)})))
+   (update-in acc [:forms]
+              conj {:type :def
+                    :name name
+                    :body body})))
+
+(defn transform-to-let [acc]
+  (if (seq (:forms acc))
+    (let [form (first (:forms acc))]
+      (list 'let [(:name form)
+                  (case (:type form)
+                    :def (:body form)
+                    :defn (list 'fn (:args form) (:body form)))]
+            (transform-to-let (update-in acc [:forms] rest))))
+    (-> acc :main :body)))
+
+(defn process-form-seq [form-seq]
+  (->> form-seq
+       (reduce transform-reducer {:forms []})
+       transform-to-let
+       transform))
 
 (defn -main
   [& args]
   (->> (repeatedly #(read *in* false :end))
        (take-while (complement (partial = :end)))
-       (reduce transform-reducer [])
+       process-form-seq
        pp/pprint))
