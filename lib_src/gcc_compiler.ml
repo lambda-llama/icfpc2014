@@ -92,8 +92,9 @@ let rec compile_expr expr state =
               (code @ c, s1))
       in
       let id = Address.create () in
-      let s2 = compile_func id names body s1 in
-      DUM n :: vals_code @ [LDF id] @ [RAP n], s2
+      let s2 = {functions = s1.functions; env = Option.value_exn s1.env.parent} in
+      let s3 = compile_func id names body s2 in
+      DUM n :: vals_code @ [LDF id] @ [RAP n], s3
 
 and compile_func id formals expr {functions; env} =
   let e_env = push_vars env formals in
