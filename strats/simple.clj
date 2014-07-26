@@ -30,7 +30,7 @@
 (defn location [actor] (nth actor 1))
 (defn direction [actor] (nth actor 2))
 (defn at [world-map xy]
-  (nth (nth (world-map) (head xy)) (tail xy)))
+  (nth (nth world-map (head xy)) (tail xy)))
 
 (defn neighbour [pos direction]
   (let [x (head pos)
