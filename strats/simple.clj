@@ -28,10 +28,10 @@
 (def LM 5)
 (def GHOST 6)
 
-(def at [world-map x y]
+(defn at [world-map x y]
   (nth (nth (world-map) y) x))
 
-(def neighbour [pos direction]
+(defn neighbour [pos direction]
   (let [x (head pos)
         y (tail pos)]
     (if (== direction UP)
