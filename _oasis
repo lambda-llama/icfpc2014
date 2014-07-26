@@ -23,9 +23,9 @@ Library llama_man
   if flag(strict)
     NativeOpt:       -w @a-4 -warn-error -a
     ByteOpt:         -w @a-4 -warn-error -a
-  BuildDepends:      core_kernel
+  BuildDepends:      core_kernel,
                      sexplib,
-                     sexplib.syntax,
+                     sexplib.syntax
 
 Executable gcc
   Path:              bin_src
