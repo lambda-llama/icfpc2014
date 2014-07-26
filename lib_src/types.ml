@@ -40,6 +40,7 @@ type expr =
   | Div of expr * expr
   | Cons of expr * expr
   | Fn of var list * expr
+  | Call of expr * expr list
   | If of expr * expr * expr
   | Eq of expr * expr
   | Gt of expr * expr
