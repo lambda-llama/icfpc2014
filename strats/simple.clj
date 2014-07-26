@@ -8,12 +8,21 @@
     (head list)
     (nth (tail list) (dec pos))))
 
-(defn lookup [list elem]
-  (let [lookup-in (fn [l p]
+(defn index [list elem]
+  (let [index-in (fn [l p]
                     (if (= (head l) elem)
                       p
-                      (lookup-in (tail l) (inc p))))]
-    (lookup-in list 0)))
+                      (index-in (tail l) (inc p))))]
+    (index-in list 0)))
+
+(defn mod1 [x y]
+  (- x (* y (/ x y))))
+
+;; http://benchmarksgame.alioth.debian.org/u32/performance.php?test=fasta#about
+(defn random [seed max]
+  (let [im 139968
+        new-seed (mod (+ (* seed 3877) 29573) im)]
+    (pair new-seed (/ (* max seed) im))))
 
 
 ;;
@@ -59,13 +68,13 @@
 (defn next [direction]
   (if (= direction LEFT)
     UP
-    (let [pos (lookup DIRECTIONS direction)]
+    (let [pos (index DIRECTIONS direction)]
       (nth DIRECTIONS (inc pos)))))
 
 (defn back [direction]
   (if (= direction UP)
     LEFT
-    (let [pos (lookup DIRECTIONS direction)]
+    (let [pos (index DIRECTIONS direction)]
       (nth DIRECTIONS (dec pos)))))
 
 
