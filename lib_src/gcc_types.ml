@@ -40,7 +40,7 @@ type ident = string with sexp
 
 type expr =
   | Const of int
-  | Debug of expr
+  | Debug of expr * expr
   | Add of expr * expr
   | Sub of expr * expr
   | Mul of expr * expr

@@ -41,9 +41,10 @@ let rec compile_expr expr state =
     c1 @ c2 @ [op], s2
   in match expr with
     | Const x -> [LDC x], state
-    | Debug e ->
-      let (c1, s1) = compile_expr e state in
-      c1 @ [DBUG], s1
+    | Debug (p, e) ->
+      let (cp, sp) = compile_expr p state in
+      let (ce, se) = compile_expr e sp in
+      cp @ [DBUG] @ ce, se
     | Add (e1, e2)  -> bin_op e1 e2 ADD
     | Sub (e1, e2)  -> bin_op e1 e2 SUB
     | Mul (e1, e2)  -> bin_op e1 e2 MUL

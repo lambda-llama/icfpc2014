@@ -59,7 +59,7 @@
         (fn [state world]
           (let [lm (lambda-man world)
                 dir (direction lm)
-                loc (location lm)
+                loc (debug (location lm) (location lm))
                 t1 (next dir)
                 t2 (back t1)
                 t3 (back t2)
