@@ -123,7 +123,10 @@ let rec assemble_rec instructions address_map =
           sprintf "SEL %d %d" (resolve addr1) (resolve addr2)
         | LDF addr -> sprintf "LDF %d" (resolve addr)
         | AP n -> sprintf "AP %d" n
-      in "  " ^ cmd ^ sprintf "\n%s" (assemble_rec xs address_map)
+      in
+
+      let indent = if cmd = "" then "" else "  " in
+      indent ^ cmd ^ sprintf "\n%s" (assemble_rec xs address_map)
 
 let assemble instructions =
   let address_map = Hashtbl.Poly.create ~size:4 () in

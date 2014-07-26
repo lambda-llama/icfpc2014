@@ -1,0 +1,11 @@
+  LDC 21
+  LDF 4
+  AP 1
+  RTN
+
+  ; x
+  LD 0 0
+  ; x
+  LD 0 0
+  ADD
+  RTN
