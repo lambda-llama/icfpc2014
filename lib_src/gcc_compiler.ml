@@ -2,8 +2,6 @@ open Core_kernel.Std
 
 open Gcc_types
 
-type code = instruction list
-
 type env = {
   vars   : var list;
   parent : env option;
@@ -95,6 +93,10 @@ and compile_func id formals expr {functions; env} =
 let compile expr =
   let (code, state) = compile_expr expr initial_state in
   code @ [RTN] @ List.concat state.functions
+
+let is_phony = function
+| LABEL _ | COMMENT _ -> true
+| _ -> false
 
 let assemble instructions =
   let address_map = Hashtbl.Poly.create ~size:4 () in

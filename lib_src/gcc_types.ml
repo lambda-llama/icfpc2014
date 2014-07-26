@@ -34,9 +34,7 @@ type instruction =
   | COMMENT of string
 with sexp_of
 
-let is_phony = function
-  | LABEL _ | COMMENT _ -> true
-  | _ -> false
+type code = instruction list
 
 type var = string with sexp
 
