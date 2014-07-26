@@ -1,12 +1,26 @@
-;;
-;; stdlibza!
+;; primitivza!
 
 (defn trace [x] (debug x x))
 
+;; is there a way to implement a lazzier OR?
+(defn and [x y]
+  (= (+ x y) 2))
+
+(defn mod [x y]
+  (- x (* y (/ x y))))
+
+
+;;
+;; stdlibza!
+
+(defn empty? [list] (atom list))
+
 (defn nth [list pos]
-  (if (= pos 0)
-    (head list)
-    (nth (tail list) (dec pos))))
+  (if (empty? list)
+    (trace 666)  ;; impossibru!
+    (if (= pos 0)
+      (head list)
+      (nth (tail list) (dec pos)))))
 
 ;; Returns the 0-based index of 'elem' in 'list'.
 (defn index [list elem]
@@ -17,12 +31,12 @@
     (index-in list 0)))
 
 (defn fold-left [list acc f]
-  (if (= list 0)
+  (if (empty? list)
     acc
     (fold-left (tail list) (f acc (head list)) f)))
 
 (defn length [list]
-  (fold-left list 0 (fn [acc x] (+ acc x))))
+  (fold-left list 0 (fn [acc _x] (+ acc 1))))
 
 (defn map [list f]
   (fold-left list 0 (fn [acc x] (pair (f x) acc))))
@@ -32,17 +46,6 @@
              (fn [acc x]
                (if (pred x) (pair x acc) acc))))
 
-;; Returns the first element of the list satisfying a given predicate.
-(defn first [list pred]
-  (if (pred (head list))
-    (head list)
-    (first (tail list) pred)))
-
-(defn and [x y]
-  (= (+ x y) 2))
-
-(defn mod [x y]
-  (- x (* y (/ x y))))
 
 ;; http://benchmarksgame.alioth.debian.org/u32/performance.php?test=fasta#about
 (defn random [seed max]
@@ -114,12 +117,14 @@
                 wm (world-map world)
                 loc (location lm)
                 dir (direction lm)
-                is-free (fn [direction]
-                          (not (= WALL (at wm (neighbour loc direction)))))
-                ;; free-directions (trace (filter DIRECTIONS is-free))
-                ;; random-data (trace (random state (length free-directions)))
-                ]
-            (pair state
-                  ;; (head random-data)
-                  ;; (nth free-directions (tail random-data))
-                  (first DIRECTIONS is-free))))))
+                free? (fn [direction]
+                        (not (= WALL (at wm (neighbour loc direction)))))
+                free-directions (filter DIRECTIONS free?)
+                df (length free-directions)]
+
+            (if (= df 1)
+              (pair state (head df))
+              (let [random-data (random state df)
+                    next-state (head random-data)
+                    random-dir (nth free-directions (tail random-data))]
+                (pair next-state random-dir)))))))
