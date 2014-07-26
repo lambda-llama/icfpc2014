@@ -91,6 +91,12 @@ let rec compile_expr expr state =
        in
        let (fn_code, s2) = compile_expr fn_expr s1 in
        (actuals_code @ fn_code @ [AP (List.length actuals)], s2)
+    | Car expr ->
+      let (tuple_expr, f) = compile_expr expr state in
+      (tuple_expr @ [CAR]), f
+    | Cdr expr ->
+      let (tuple_expr, f) = compile_expr expr state in
+      (tuple_expr @ [CDR]), f
 
 and compile_func id formals expr {functions; env} =
   let e_env = push_vars env formals in

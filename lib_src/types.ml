@@ -46,4 +46,6 @@ type expr =
   | Gt of expr * expr
   | Gte of expr * expr
   | Var of var
+  | Car of expr
+  | Cdr of expr
   (* | Call of expr * expr list *)
