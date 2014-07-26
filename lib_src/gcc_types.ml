@@ -47,6 +47,7 @@ type expr =
   | Cons of expr * expr
   | Fn of var list * expr
   | Call of expr * expr list
+  | Letrec of (var * expr) list * expr
   | If of expr * expr * expr
   | Eq of expr * expr
   | Gt of expr * expr
