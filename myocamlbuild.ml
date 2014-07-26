@@ -1,5 +1,5 @@
 (* OASIS_START *)
-(* DO NOT EDIT (digest: 558890fc45529b8144daaee97072ace0) *)
+(* DO NOT EDIT (digest: fd8343ab67f6160f91dd1cd139212fcc) *)
 module OASISGettext = struct
 (* # 22 "src/oasis/OASISGettext.ml" *)
 
@@ -595,48 +595,48 @@ end
 open Ocamlbuild_plugin;;
 let package_default =
   {
-     MyOCamlbuildBase.lib_ocaml = [("lm", ["lib_src"], [])];
+     MyOCamlbuildBase.lib_ocaml = [("llama_man", ["lib_src"], [])];
      lib_c = [];
      flags =
        [
-          (["oasis_library_lm_byte"; "ocaml"; "link"; "byte"],
+          (["oasis_library_llama_man_byte"; "ocaml"; "link"; "byte"],
             [
                (OASISExpr.EBool true, S []);
                (OASISExpr.EFlag "strict",
                  S [A "-w"; A "@a"; A "-warn-error"; A "-a"])
             ]);
-          (["oasis_library_lm_native"; "ocaml"; "link"; "native"],
+          (["oasis_library_llama_man_native"; "ocaml"; "link"; "native"],
             [
                (OASISExpr.EBool true, S []);
                (OASISExpr.EFlag "strict",
                  S [A "-w"; A "@a"; A "-warn-error"; A "-a"])
             ]);
-          (["oasis_library_lm_byte"; "ocaml"; "ocamldep"; "byte"],
+          (["oasis_library_llama_man_byte"; "ocaml"; "ocamldep"; "byte"],
             [
                (OASISExpr.EBool true, S []);
                (OASISExpr.EFlag "strict",
                  S [A "-w"; A "@a"; A "-warn-error"; A "-a"])
             ]);
-          (["oasis_library_lm_native"; "ocaml"; "ocamldep"; "native"],
+          (["oasis_library_llama_man_native"; "ocaml"; "ocamldep"; "native"],
             [
                (OASISExpr.EBool true, S []);
                (OASISExpr.EFlag "strict",
                  S [A "-w"; A "@a"; A "-warn-error"; A "-a"])
             ]);
-          (["oasis_library_lm_byte"; "ocaml"; "compile"; "byte"],
+          (["oasis_library_llama_man_byte"; "ocaml"; "compile"; "byte"],
             [
                (OASISExpr.EBool true, S []);
                (OASISExpr.EFlag "strict",
                  S [A "-w"; A "@a"; A "-warn-error"; A "-a"])
             ]);
-          (["oasis_library_lm_native"; "ocaml"; "compile"; "native"],
+          (["oasis_library_llama_man_native"; "ocaml"; "compile"; "native"],
             [
                (OASISExpr.EBool true, S []);
                (OASISExpr.EFlag "strict",
                  S [A "-w"; A "@a"; A "-warn-error"; A "-a"])
             ])
        ];
-     includes = [("bin_src", ["lib_src"])]
+     includes = [("lib_test", ["lib_src"]); ("bin_src", ["lib_src"])]
   }
   ;;
 

@@ -1,5 +1,5 @@
 OASISFormat:    0.4
-Name:           lambda-man
+Name:           icfpc2014
 Version:        2014
 Synopsis:       ICFPC
 Authors:        Aleksey Kladov <aleksey.kladov@gmail.com>,
@@ -15,7 +15,7 @@ Flag strict
   Description:    Strict compile-time checks
   Default:        true
 
-Library lm
+Library llama_man
   Path:              lib_src
   CompiledObject:    best
   Modules:           Types,
@@ -25,9 +25,19 @@ Library lm
     ByteOpt:         -w @a -warn-error -a
   BuildDepends:      core_kernel
 
-Executable lm
+Executable gcc
   Path:              bin_src
-  MainIs:            main.ml
+  MainIs:            main.ml  # rename?
   CompiledObject:    best
   Install:           true
-  BuildDepends:      lm
+  BuildDepends:      llama_man
+
+Executable test_runner
+  Path:               lib_test
+  MainIs:             test_runner.ml
+  Build$:             flag(tests)
+  Custom:             true
+  CompiledObject:     best
+  Install:            false
+  BuildDepends:       llama_man
+                    , oUnit (>= 2.0.0)
