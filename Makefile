@@ -3,6 +3,9 @@
 
 SETUP = ocaml setup.ml
 
+uberjar:
+	cd tosexp && lein uberjar && cd ..
+
 build: setup.data
 	$(SETUP) -build $(BUILDFLAGS)
 
