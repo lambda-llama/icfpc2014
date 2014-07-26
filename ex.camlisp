@@ -1,1 +1,1 @@
-(Call (Fn (foo bar) (Add (Var foo) (Var bar))) ((Const 1) (Const 2)))
+(Call (Fn () (Const 92)) ((Const 42)))

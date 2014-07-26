@@ -65,6 +65,9 @@
    [[(macros :guard macroses) & args]]
    (apply (macroses macros) args)
 
+   [[a & args]]
+   (list 'Call (transform a) (apply list (map transform args)))
+
    [(a :guard number?)]
    (list 'Const a)
 
