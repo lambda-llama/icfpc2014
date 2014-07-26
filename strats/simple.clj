@@ -26,7 +26,7 @@
               world-map (fn [world] (head world))
               lambda-man (fn [world] (nth world 2))
               direction (fn [world] (nth world 3))
-              location (fn [world] (nth actor 2))
+              location (fn [actor] (nth actor 2))
               at (fn [world-map x y]
                    (nth (nth (world-map) y) x))
               neighbour (fn [pos direction]
