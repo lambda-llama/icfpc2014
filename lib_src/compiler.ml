@@ -5,11 +5,6 @@ open Printf
 
 type code = Types.instruction list
 
-let uid = let
-  id = ref 0
-  in fun x ->
-    incr id; !id
-
 type env = {
   vars   : var list;
   parent : env option;
@@ -67,7 +62,7 @@ let rec compile_expr expr state =
     | Gt (e1, e2)   -> bin_op e1 e2 CGT
     | Gte (e1, e2)  -> bin_op e1 e2 CGTE
     | Fn (formals, e)->
-      let id = uid() in
+      let id = Address.create () in
       let s1 = compile_func id formals e state in
       [LDF id], s1
     | Var var ->
@@ -77,7 +72,8 @@ let rec compile_expr expr state =
       let (cond_code, s1) = compile_expr cond state in
       let (true_code, s2) = compile_expr t s1 in
       let (false_code, s3) = compile_expr f s2 in
-      let (true_addr, false_addr) = (uid(), uid()) in
+      let true_addr = Address.create ()
+      and false_addr = Address.create () in
       (cond_code @ [SEL (true_addr, false_addr)],
        add_fn true_addr true_code JOIN s3 |>
          add_fn false_addr false_code JOIN)
@@ -124,10 +120,10 @@ let rec assemble_rec instructions address_map =
       in "  " ^ cmd ^ sprintf "\n%s" (assemble_rec xs address_map)
 
 let assemble instructions =
-  let address_map = Int.Table.create ~size:4 () in
+  let address_map = Hashtbl.Poly.create ~size:4 () in
   let (_ : int) = List.fold_left instructions
       ~init:0
       ~f:(fun acc -> function
-          | LABEL l -> Hashtbl.add address_map l acc; acc
+          | LABEL l -> Hashtbl.add_exn address_map ~key:l ~data:acc; acc
           | _       -> succ acc)
   in assemble_rec instructions address_map
