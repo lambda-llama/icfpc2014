@@ -30,7 +30,7 @@
 (defn location [actor] (nth actor 1))
 (defn direction [actor] (nth actor 2))
 (defn at [world-map xy]
-  (nth (nth world-map (head xy)) (tail xy)))
+  (nth (nth world-map (tail xy)) (head xy)))
 
 (defn neighbour [loc direction]
   (let [x (head loc)
@@ -63,7 +63,7 @@
           (let [lm (lambda-man world)
                 wm (world-map world)
                 loc (location lm)
-                dir (direction lm)
+                dir (trace (direction lm))
                 t1 (next dir)
                 t2 (back t1)
                 t3 (back t2)
