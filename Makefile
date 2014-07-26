@@ -42,3 +42,7 @@ configure:
 
 uberjar:
 	cd tosexp && lein uberjar && cd ..
+
+clean-uberjar:
+	rm -r tosexp/target
+	rm tosexp.jar
