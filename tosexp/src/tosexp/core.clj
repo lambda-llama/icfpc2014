@@ -27,7 +27,9 @@
     (list (transform arg) (transform 0))))
 
 (def macroses
-  {'list list-macro})
+  {'list list-macro
+   'inc (fn [a] (transform (list '+ a 1)))
+   'dec (fn [a] (transform (list '- a 1)))})
 
 (defn transform [form]
   (match

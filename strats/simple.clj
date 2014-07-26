@@ -1,8 +1,5 @@
 (defn main [world undocumented]
-  '(initial_state step_fn))
-
-(def initial_state
-  0)
+  (pair 0 step_fn))
 
 (defn step_fn [state world]
   (let [lm (lambda-man world)
@@ -12,8 +9,9 @@
         t2 (back t1)
         t3 (back t2)
         is-free (fn [t] (not (== WALL (neighbour loc t))))]
-    '(state, (if (is-free t1)
-               t1
-               (if (is-free t2)
-                 t2
-                 t3)))))
+    (pair state
+          (if (is-free t1)
+            t1
+            (if (is-free t2)
+              t2
+              t3)))))

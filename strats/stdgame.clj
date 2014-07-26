@@ -4,7 +4,6 @@
 (def RIGHT 3)
 (def DIRECTIONS [UP RIGTH DOWN LEFT])
 
-
 (def WALL 0)
 (def EMPTY 1)
 (def PILL 2)
@@ -12,7 +11,6 @@
 (def FRUIT 4)
 (def LM 5)
 (def GHOST 6)
-
 
 (defn world-map [world]
   (head world))
