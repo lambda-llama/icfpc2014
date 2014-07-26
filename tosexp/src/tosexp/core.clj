@@ -4,9 +4,9 @@
 
 (defn transform [form]
   (match
-   [(vec form)]
+   [(if (list? form) (vec form) form)]
    [['+ a b]] (list 'Add (transform a) (transform b))
-   [(a :guard number?)] (list 'Const a)
+   [(a :guard #(number? %))] (list 'Const a)
    ))
 
 (defn mytest []
