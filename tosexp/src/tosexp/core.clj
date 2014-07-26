@@ -30,7 +30,7 @@
 (defn let-macro [args body]
   (if (seq args)
     (let [[k v] (take 2 args)]
-      (list 'Letrec (list (list (transform k) (transform v)))
+      (list 'Letrec (list (list k (transform v)))
             (let-macro (drop 2 args) body)))
     (transform body)))
 
