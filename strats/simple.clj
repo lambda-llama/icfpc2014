@@ -1,15 +1,13 @@
 (pair 0
       (fn [state world]
-        (let [nth (fn [l pos]
+        (let [nth (fn [lst pos]
                     (if (= pos 0)
-                      (head l)
-                      (nth (tail l) (dec pos))))
-              lookup (fn [list elem]
-                       (let [lookup-in (fn [l p]
-                                         (if (= (head l) elem)
-                                           p
-                                           (lookup-in (tail l) (inc p))))]
-                         (lookup-in list 0)))
+                      (head lst)
+                      (nth (tail lst) (dec pos))))
+              lookup (fn [lst elem n]
+                       (if (= (head lst) elem)
+                         n
+                         (lookup (tail lst) elem (inc n))))
 
               UP 0
               LEFT 1
@@ -42,12 +40,12 @@
               next (fn [direction]
                      (if (= direction LEFT)
                        UP
-                       (let [pos (lookup DIRECTIONS direction)]
+                       (let [pos (lookup DIRECTIONS direction 0)]
                          (nth DIRECTIONS (inc pos)))))
               back (fn [direction]
                      (if (= direction UP)
                        RIGHT
-                       (let [pos (lookup DIRECTIONS direction)]
+                       (let [pos (lookup DIRECTIONS direction 0)]
                          (nth DIRECTIONS (dec pos)))))
 
               lm (lambda-man world)
