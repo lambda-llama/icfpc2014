@@ -8,6 +8,7 @@
     (head list)
     (nth (tail list) (dec pos))))
 
+;; Returns the 0-based index of 'elem' in 'list'.
 (defn index [list elem]
   (let [index-in (fn [l p]
                     (if (= (head l) elem)
@@ -15,7 +16,32 @@
                       (index-in (tail l) (inc p))))]
     (index-in list 0)))
 
-(defn mod1 [x y]
+(defn fold-left [list acc f]
+  (if (= list 0)
+    acc
+    (fold-left (tail list) (f acc (head list)) f)))
+
+(defn length [list]
+  (fold-left list 0 (fn [acc x] (+ acc x))))
+
+(defn map [list f]
+  (fold-left list 0 (fn [acc x] (pair (f x) acc))))
+
+(defn filter [list pred]
+  (fold-left list 0
+             (fn [acc x]
+               (if (pred x) (pair x acc) acc))))
+
+;; Returns the first element of the list satisfying a given predicate.
+(defn first [list pred]
+  (if (pred (head list))
+    (head list)
+    (first (tail list) pred)))
+
+(defn and [x y]
+  (= (+ x y) 2))
+
+(defn mod [x y]
   (- x (* y (/ x y))))
 
 ;; http://benchmarksgame.alioth.debian.org/u32/performance.php?test=fasta#about
@@ -82,19 +108,18 @@
 ;; logika
 
 (defn main [initial-world ghost-ai]
-  (pair 0
+  (pair 42
         (fn [state world]
           (let [lm (lambda-man world)
                 wm (world-map world)
                 loc (location lm)
-                dir (trace (direction lm))
-                t1 (if state (next dir) (back dir))
-                t2 dir
-                t3 (back (back dir))
-                is-free (fn [t] (not (= WALL (at wm (neighbour loc t)))))]
-            (pair (not state)
-                  (if (is-free t1)
-                    t1
-                    (if (is-free t2)
-                      t2
-                      t3)))))))
+                dir (direction lm)
+                is-free (fn [direction]
+                          (not (= WALL (at wm (neighbour loc direction)))))
+                ;; free-directions (trace (filter DIRECTIONS is-free))
+                ;; random-data (trace (random state (length free-directions)))
+                ]
+            (pair state
+                  ;; (head random-data)
+                  ;; (nth free-directions (tail random-data))
+                  (first DIRECTIONS is-free))))))
