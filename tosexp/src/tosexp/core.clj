@@ -62,7 +62,7 @@
 
 (defn -main
   [& args]
-  (-> (slurp *in*)
-      read
+  (-> (slurp (java.io.BufferedReader. *in*))
+      read-string
       transform
       println))
