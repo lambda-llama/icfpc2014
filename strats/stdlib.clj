@@ -1,7 +1,7 @@
 (defn nth [list pos]
   (if (= pos 0)
     (head list)
-    (nth (tail list) (dec pos)))
+    (nth (tail list) (dec pos))))
 
 (defn lookup [list elem]
   (let [lookup-in (fn [l p]

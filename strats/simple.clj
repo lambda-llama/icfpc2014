@@ -1,17 +1,65 @@
-(defn main [world undocumented]
-  (pair 0 step-fn))
+(pair 0
+      (fn [state world]
+        (let [nth (fn [list pos]
+                    (if (= pos 0)
+                      (head list)
+                      (nth (tail list) (dec pos))))
+              lookup (fn [list elem]
+                       (let [lookup-in (fn [l p]
+                                         (if (= (head l) elem)
+                                           p
+                                           (lookup-in (tail l) (inc p))))]
+                         (lookup-in list 0)))
 
-(defn step-fn [state world]
-  (let [lm (lambda-man world)
-        dir (direction lm)
-        loc (location lm)
-        t1 (next dir)
-        t2 (back t1)
-        t3 (back t2)
-        is-free (fn [t] (not (= WALL (neighbour loc t))))]
-    (pair state
-          (if (is-free t1)
-            t1
-            (if (is-free t2)
-              t2
-              t3)))))
+              UP 0
+              LEFT 1
+              DOWN 2
+              RIGHT 3
+              DIRECTIONS (list UP RIGHT DOWN LEFT)
+              WALL 0
+              EMPTY 1
+              PILL 2
+              POWER-PILL 3
+              FRUIT 4
+              LM 5
+              GHOST 6
+              world-map (fn [world] (head world))
+              lambda-man (fn [world] (nth world 2))
+              direction (fn [world] (nth world 3))
+              location (fn [world] (nth actor 2))
+              at (fn [world-map x y]
+                   (nth (nth (world-map) y) x))
+              neighbour (fn [pos direction]
+                          (let [x (head pos)
+                                y (tail pos)]
+                            (if (= direction UP)
+                              (pair x (dec y))
+                              (if (= direction LEFT)
+                                (pair (dec x) y)
+                                (if (= direction DOWN)
+                                  (pair x (inc y))
+                                  (pair (inc x) y))))))
+              next (fn [direction]
+                     (if (= direction LEFT)
+                       UP
+                       (let [pos (lookup DIRECTIONS direction)]
+                         (nth DIRECTIONS (inc pos)))))
+              back (fn [direction]
+                     (if (= direction UP)
+                       RIGHT
+                       (let [pos (lookup DIRECTIONS direction)]
+                         (nth DIRECTIONS (dec pos)))))
+
+              lm (lambda-man world)
+              dir (direction lm)
+              loc (location lm)
+              t1 (next dir)
+              t2 (back t1)
+              t3 (back t2)
+              is-free (fn [t] (not (= WALL (neighbour loc t))))]
+          (pair state
+                (if (is-free t1)
+                  t1
+                  (if (is-free t2)
+                    t2
+                    t3))))))
