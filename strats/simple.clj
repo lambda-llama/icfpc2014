@@ -1,63 +1,72 @@
-(pair 0
-      (fn [state world]
-        (let [nth (fn [lst pos]
-                    (if (= pos 0)
-                      (head lst)
-                      (nth (tail lst) (dec pos))))
-              lookup (fn [lst elem n]
-                       (if (= (head lst) elem)
-                         n
-                         (lookup (tail lst) elem (inc n))))
+(defn nth [list pos]
+  (if (= pos 0)
+    (head list)
+    (nth (tail list) (dec pos))))
 
-              UP 0
-              LEFT 1
-              DOWN 2
-              RIGHT 3
-              DIRECTIONS (list UP RIGHT DOWN LEFT)
-              WALL 0
-              EMPTY 1
-              PILL 2
-              POWER-PILL 3
-              FRUIT 4
-              LM 5
-              GHOST 6
-              world-map (fn [world] (head world))
-              lambda-man (fn [world] (nth world 2))
-              direction (fn [world] (nth world 3))
-              location (fn [actor] (nth actor 2))
-              at (fn [world-map x y]
-                   (nth (nth (world-map) y) x))
-              neighbour (fn [pos direction]
-                          (let [x (head pos)
-                                y (tail pos)]
-                            (if (= direction UP)
-                              (pair x (dec y))
-                              (if (= direction LEFT)
-                                (pair (dec x) y)
-                                (if (= direction DOWN)
-                                  (pair x (inc y))
-                                  (pair (inc x) y))))))
-              next (fn [direction]
-                     (if (= direction LEFT)
-                       UP
-                       (let [pos (lookup DIRECTIONS direction 0)]
-                         (nth DIRECTIONS (inc pos)))))
-              back (fn [direction]
-                     (if (= direction UP)
-                       RIGHT
-                       (let [pos (lookup DIRECTIONS direction 0)]
-                         (nth DIRECTIONS (dec pos)))))
+(defn lookup [list elem]
+  (let [lookup-in (fn [l p]
+                    (if (= (head l) elem)
+                      p
+                      (lookup-in (tail l) (inc p))))]
+    (lookup-in list 0)))
 
-              lm (lambda-man world)
-              dir (direction lm)
-              loc (location lm)
-              t1 (next dir)
-              t2 (back t1)
-              t3 (back t2)
-              is-free (fn [t] (not (= WALL (neighbour loc t))))]
-          (pair state
-                (if (is-free t1)
-                  t1
-                  (if (is-free t2)
-                    t2
-                    t3))))))
+(def UP 0)
+(def LEFT 1)
+(def DOWN 2)
+(def RIGHT 3)
+
+(def DIRECTIONS (list UP RIGHT DOWN LEFT))
+
+(def WALL 0)
+(def EMPTY 1)
+(def PILL 2)
+(def POWER-PILL 3)
+(def FRUIT 4)
+(def LM 5)
+(def GHOST 6)
+
+(defn world-map [world] (head world))
+(defn lambda-man [world] (nth world 2))
+(defn direction [actor] (nth actor 3))
+(defn location [actor] (nth actor 3))
+(defn at [world-map x y] (nth (nth (world-map) y) x))
+
+(defn neighbour [pos direction]
+  (let [x (head pos)
+        y (tail pos)]
+    (if (= direction UP)
+      (pair x (dec y))
+      (if (= direction LEFT)
+        (pair (dec x) y)
+        (if (= direction DOWN)
+          (pair x (inc y))
+          (pair (inc x) y))))))
+
+(defn next [direction]
+  (if (= direction LEFT)
+    UP
+    (let [pos (lookup DIRECTIONS direction)]
+      (nth DIRECTIONS (inc pos)))))
+
+(defn back [direction]
+  (if (= direction UP)
+    RIGHT
+    (let [pos (lookup DIRECTIONS direction)]
+      (nth DIRECTIONS (dec pos)))))
+
+(defn main [initial-world ghost-ai]
+  (pair 0
+        (fn [state world]
+          (let [lm (lambda-man world)
+                dir (direction lm)
+                loc (location lm)
+                t1 (next dir)
+                t2 (back t1)
+                t3 (back t2)
+                is-free (fn [t] (not (= WALL (neighbour loc t))))]
+            (pair state
+                  (if (is-free t1)
+                    t1
+                    (if (is-free t2)
+                      t2
+                      t3)))))))
