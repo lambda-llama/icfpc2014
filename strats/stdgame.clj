@@ -2,7 +2,7 @@
 (def LEFT 1)
 (def DOWN 2)
 (def RIGHT 3)
-(def DIRECTIONS [UP RIGTH DOWN LEFT])
+(def DIRECTIONS (list UP RIGHT DOWN LEFT))
 
 (def WALL 0)
 (def EMPTY 1)
@@ -30,22 +30,22 @@
 (defn neighbour [pos direction]
   (let [x (head pos)
         y (tail pos)]
-    (if (== direction UP)
-      '(x, (prev y))
-      (if (== direction LEFT)
-        '((prev x), y)
-        (if (== direction DOWN)
-          '(x, (succ y))
-          '((succ x), y))))))
+    (if (= direction UP)
+      (pair x (dec y))
+      (if (= direction LEFT)
+        (pair (dec x) y)
+        (if (= direction DOWN)
+          (pair x (inc y))
+          (pair (inc x) y))))))
 
 (defn next [direction]
-  (if (== direction LEFT)
+  (if (= direction LEFT)
     UP
     (let [pos (lookup DIRECTIONS direction)]
-      (nth DIRECTIONS (succ pos)))))
+      (nth DIRECTIONS (inc pos)))))
 
 (defn back [direction]
-  (if (== direction UP)
+  (if (= direction UP)
     RIGHT
     (let [pos (lookup DIRECTIONS direction)]
-      (nth DIRECTIONS (pred pos)))))
+      (nth DIRECTIONS (dec pos)))))

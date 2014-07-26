@@ -28,6 +28,7 @@
 
 (def macroses
   {'list list-macro
+   'not (fn [arg] (- 1 arg))
    'inc (fn [a] (transform (list '+ a 1)))
    'dec (fn [a] (transform (list '- a 1)))})
 
