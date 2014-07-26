@@ -74,9 +74,24 @@
    [(a :guard symbol?)]
    (list 'Var a)))
 
+(defn transform-reducer [acc form]
+  (match
+   [(if (list? form) (vec form) form)]
+
+   [['defn name (args :guard vector?) body]]
+   (conj acc {:type :defn
+              :name name
+              :args (apply list (map transform args))
+              :body (transform body)})
+
+   [['def name body]]
+   (conj acc {:type :def
+              :name name
+              :body (transform body)})))
+
 (defn -main
   [& args]
-  (-> (slurp (java.io.BufferedReader. *in*))
-      read-string
-      transform
-      pp/pprint))
+  (->> (repeatedly #(read *in* false :end))
+       (take-while (complement (partial = :end)))
+       (reduce transform-reducer [])
+       pp/pprint))
