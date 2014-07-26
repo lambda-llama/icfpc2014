@@ -1,3 +1,8 @@
+;;
+;; stdlibza!
+
+(defn trace [x] (debug x x))
+
 (defn nth [list pos]
   (if (= pos 0)
     (head list)
@@ -9,6 +14,10 @@
                       p
                       (lookup-in (tail l) (inc p))))]
     (lookup-in list 0)))
+
+
+;;
+;; constanza!
 
 (def UP 0)
 (def RIGHT 1)
@@ -24,6 +33,10 @@
 (def FRUIT 4)
 (def LM 5)
 (def GHOST 6)
+
+
+;;
+;; DSLza!
 
 (defn world-map [world] (head world))
 (defn lambda-man [world] (nth world 1))
@@ -55,7 +68,9 @@
     (let [pos (lookup DIRECTIONS direction)]
       (nth DIRECTIONS (dec pos)))))
 
-(defn trace [x] (debug x x))
+
+;;
+;; logika
 
 (defn main [initial-world ghost-ai]
   (pair 0
