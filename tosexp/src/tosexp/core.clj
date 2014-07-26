@@ -31,7 +31,7 @@
   (let [args (partition 2 args)
         ks (map first args)
         vs (map (comp transform last) args)
-        args (apply list (map vector ks vs))]
+        args (map #(apply list %) (map vector ks vs))]
     (list 'Letrec args (transform body))))
 
 (def macroses
