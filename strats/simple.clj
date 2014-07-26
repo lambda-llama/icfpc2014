@@ -2,9 +2,12 @@
 
 (defn trace [x] (debug x x))
 
-;; is there a way to implement a lazzier OR?
+;; is there a way to implement a lazzier AND?
 (defn and [x y]
   (= (+ x y) 2))
+
+(defn or [x y]
+  (>= (+ x y)) 1)
 
 (defn mod [x y]
   (- x (* y (/ x y))))
@@ -35,9 +38,6 @@
     acc
     (fold-left (tail list) (f acc (head list)) f)))
 
-(defn length [list]
-  (fold-left list 0 (fn [acc _x] (+ acc 1))))
-
 (defn map [list f]
   (fold-left list 0 (fn [acc x] (pair (f x) acc))))
 
@@ -46,6 +46,8 @@
              (fn [acc x]
                (if (pred x) (pair x acc) acc))))
 
+(defn length [list]
+  (fold-left list 0 (fn [acc _x] (+ acc 1))))
 
 ;; http://benchmarksgame.alioth.debian.org/u32/performance.php?test=fasta#about
 (defn random [seed max]
