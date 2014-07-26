@@ -5,13 +5,14 @@
 (defn transform [form]
   (match
    [(if (list? form) (vec form) form)]
+
    [['+ a b]] (list 'Add (transform a) (transform b))
-   [(a :guard #(number? %))] (list 'Const a)
+   [(a :guard number?)] (list 'Const a)
    ))
 
 (defn mytest []
-  (let []
-    '(+ 1 2)))
+  (transform
+   '(+ 1 2)))
 
 (defn foo
   "I don't do a whole lot."
