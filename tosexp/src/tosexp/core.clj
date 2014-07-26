@@ -19,7 +19,6 @@
    '<= 'Gte
    '> [:inverted 'Gt]
    '>= [:inverted 'Gte]
-   'if 'If
    'pair 'Cons})
 
 (defn list-macro [arg & args]
@@ -49,7 +48,7 @@
    (list 'Fn (apply list args) (transform body))
 
    [['if guard t f]]
-   (list 'If guard t f)
+   (list 'If (transform guard) (transform t) (transform f))
 
    [[(macros :guard macroses) & args]]
    (apply (macroses macros) args)
