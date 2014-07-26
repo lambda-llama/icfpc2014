@@ -56,5 +56,3 @@ type expr =
   | Car of expr
   | Cdr of expr
 with sexp
-
-type program = ((ident * expr) list) * expr with sexp
