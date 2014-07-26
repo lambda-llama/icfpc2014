@@ -30,6 +30,8 @@ type instruction =
   | BRK          (* breakpoint debugging *)
   | LABEL of address
 
+type var = string
+
 type expr =
   | Const of int
   | Add of expr * expr
@@ -37,10 +39,10 @@ type expr =
   | Mul of expr * expr
   | Div of expr * expr
   | Cons of expr * expr
-  | Fn of expr
+  | Fn of var list * expr
   | If of expr * expr * expr
-  | Arg of int
   | Eq of expr * expr
   | Gt of expr * expr
   | Gte of expr * expr
+  | Var of var
   (* | Call of expr * expr list *)
