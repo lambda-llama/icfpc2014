@@ -60,7 +60,7 @@ let rec compile_expr expr state =
       [LDF id], s1
     | Var var ->
        let (e, i) = lookup state.env var in
-       [LD (e, i)], state
+       [COMMENT var; LD (e, i)], state
     | If (cond, t, f) ->
       let (cond_code, s1) = compile_expr cond state in
       let (true_code, s2) = compile_expr t s1 in
@@ -117,6 +117,7 @@ let rec assemble_rec instructions address_map =
         | CAR  -> "CAR"
         | CDR  -> "CDR"
         | LABEL _ -> ""
+        | COMMENT c -> sprintf "; %s" c
         | LD (i, j) -> sprintf "LD %d %d" i j
         | SEL (addr1, addr2) ->
           sprintf "SEL %d %d" (resolve addr1) (resolve addr2)
@@ -128,7 +129,9 @@ let assemble instructions =
   let address_map = Hashtbl.Poly.create ~size:4 () in
   let (_ : int) = List.fold_left instructions
       ~init:0
-      ~f:(fun acc -> function
-          | LABEL l -> Hashtbl.add_exn address_map ~key:l ~data:acc; acc
-          | _       -> succ acc)
+      ~f:(fun acc inst->
+          begin match inst with
+          |LABEL l -> Hashtbl.add_exn address_map ~key:l ~data:acc
+          | _ -> ()
+          end; if is_phony inst then acc else succ acc)
   in assemble_rec instructions address_map

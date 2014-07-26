@@ -33,6 +33,11 @@ type instruction =
   | DBG          (* printf debugging *)
   | BRK          (* breakpoint debugging *)
   | LABEL of address
+  | COMMENT of string
+
+let is_phony = function
+  | LABEL _ | COMMENT _ -> true
+  | _ -> false
 
 type var = string
 
