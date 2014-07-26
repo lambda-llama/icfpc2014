@@ -32,9 +32,9 @@
 (defn at [world-map xy]
   (nth (nth world-map (head xy)) (tail xy)))
 
-(defn neighbour [pos direction]
-  (let [x (head pos)
-        y (tail pos)]
+(defn neighbour [loc direction]
+  (let [x (head loc)
+        y (tail loc)]
     (if (= direction UP)
       (pair x (dec y))
       (if (= direction LEFT)
