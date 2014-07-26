@@ -1,15 +1,13 @@
 open Types
 open Compiler
+open Stdlib
 
 let initial = Const 0
 
-let pair a b = Cons (Const a, Const b)
-
-let turn = Fn (["cond"], (If (Var "cond",
-                              pair 0 1,
-                              pair 1 3)))
-
-let step = Fn (["x"], Call (turn, [Var "x"]))
+let step = scope
+             "turn" (Fn (["cond"], (If (Var "cond",
+                                        pair 0 1, pair 1 3))))
+             (Fn (["x"], Call (Var "turn", [Var "x"])))
 
 let e =  Cons (initial, step)
 
