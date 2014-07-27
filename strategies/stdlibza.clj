@@ -20,6 +20,10 @@
 
 (defn empty? [list] (atom list))
 
+(defn fst [p] (head p))
+
+(defn snd [p] (tail p))
+
 (defn nth [list pos]
   (if (empty? list)
     list  ;; this way we can query tuples with '0' as last element.
