@@ -64,8 +64,9 @@
 ;;
 ;; logika
 
-(defn random-directions [state current-dir free-dirs free-locs ghosts]
-  (let [df (length free-dirs)]
+(defn random-directions [state current-dir free-dirs-locs ghosts]
+  (let [free-dirs (map fst free-dirs-locs)
+        df (length free-dirs)]
     (if (= df 1)
       (pair state (head free-dirs))
       (let [random-data (random state df)
@@ -73,14 +74,14 @@
             random-dir (nth free-dirs (tail random-data))]
         (pair next-state random-dir)))))
 
-(defn random-directions-no-back [state current-dir free-dirs free-locs ghosts]
-  (let [free-dirs-no-back (filter
-                           (fn [dir] (not= dir (back (back current-dir))))
-                           free-dirs)
-        next-free-dirs (if (empty? free-dirs-no-back)
-                         free-dirs
-                         free-dirs-no-back)]
-    (random-directions state current-dir next-free-dirs free-locs ghosts)))
+(defn random-directions-no-back [state current-dir free-dirs-locs ghosts]
+  (let [free-dirs-locs-no-back (filter
+                                (fn [dl] (not= (fst dl) (back (back current-dir))))
+                                free-dirs-locs)
+        next-free-dirs-locs (if (empty? free-dirs-locs-no-back)
+                         free-dirs-locs
+                         free-dirs-locs-no-back)]
+    (random-directions state current-dir next-free-dirs-locs ghosts)))
 
 (defn ghost-runaway [state current-dir free-dirs-locs ghosts]
   (let [ghost-locs (map location ghosts)
@@ -96,10 +97,10 @@
         dirs-locs (map (fn [dir] (pair dir (neighbour loc dir)))
                        DIRECTIONS)
         free-dirs-locs (filter (fn [dl] (free? wm (snd dl))) dirs-locs)]
-    (ghost-runaway state
-                   (direction lm)
-                   free-dirs-locs
-                   (ghosts world))))
+    (random-directions-no-back state
+                               (direction lm)
+                               free-dirs-locs
+                               (ghosts world))))
 
 (defn main [initial-world ghost-ai]
   (let [initial-state (sum-by (fn [program]
