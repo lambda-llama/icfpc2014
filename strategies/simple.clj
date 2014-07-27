@@ -133,7 +133,7 @@
                 df (length free-directions)]
 
             (if (= df 1)
-              (pair state (head directions))
+              (pair state (head free-directions))
               (let [random-data (random state df)
                     next-state (head random-data)
                     random-dir (nth free-directions (tail random-data))]
