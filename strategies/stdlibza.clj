@@ -57,6 +57,9 @@
                 (if (pred x) (pair x acc) acc))
               0 list))
 
+(defn sum-by [f list]
+  (fold-left (fn [acc x] (+ acc (f x))) 0 list))
+
 (defn min-by [key list]
   (if (empty? list) (trace 667)
       (let [init-x (head list)

@@ -73,6 +73,15 @@
             random-dir (nth free-dirs (tail random-data))]
         (pair next-state random-dir)))))
 
+(defn random-directions-no-back [state current-dir free-dirs free-locs ghosts]
+  (let [free-dirs-no-back (filter
+                           (fn [dir] (not= dir (back (back current-dir))))
+                           free-dirs)
+        next-free-dirs (if (empty? free-dirs-no-back)
+                         free-dirs
+                         free-dirs-no-back)]
+    (random-directions state current-dir next-free-dirs free-locs ghosts)))
+
 (defn ghost-runaway [state current-dir free-dirs free-locs ghosts]
   (let [ghost-locs (map location ghosts)
         loc (head free-locs)
@@ -87,14 +96,14 @@
                             (free? wm (neighbour loc dir)))
                           DIRECTIONS)
         free-locs (map (fn [dir] (neighbour loc dir)) free-dirs)]
-    (ghost-runaway state
-                   (direction lm)
-                   free-dirs
-                   free-locs
-                   (ghosts world))))
-
-(def initial-state
-  42)
+    (random-directions-no-back state
+                               (direction lm)
+                               free-dirs
+                               free-locs
+                               (ghosts world))))
 
 (defn main [initial-world ghost-ai]
-  (pair initial-state step))
+  (let [initial-state (sum-by (fn [program]
+                                (sum-by (fn [op] (head op)) program))
+                              ghost-ai)]
+    (pair initial-state step)))
