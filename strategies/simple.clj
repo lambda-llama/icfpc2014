@@ -52,28 +52,34 @@
     (let [pos (index DIRECTIONS direction)]
       (nth DIRECTIONS (dec pos)))))
 
+(defn free? [wm loc]
+  (not (= WALL (at wm loc))))
 
 ;;
 ;; logika
 
-(defn random-directions [state free-directions]
-  (let [df (length free-directions)]
+(defn random-directions [state free-dirs]
+  (let [df (length free-dirs)]
     (if (= df 1)
-      (pair state (head free-directions))
+      (pair state (head free-dirs))
       (let [random-data (random state df)
             next-state (head random-data)
-            random-direction (nth free-directions (tail random-data))]
-        (pair next-state random-direction)))))
+            random-dir (nth free-dirs (tail random-data))]
+        (pair next-state random-dir)))))
+
+(defn ghost-runaway [state current-dir free-dirs ghosts]
+  (let [ghost-locs (map location ghosts)]
+    (pair state current-dir)))
 
 (defn step [state world]
   (let [lm (lambda-man world)
         wm (world-map world)
         loc (location lm)
-        free? (fn [direction]
-                (not (= WALL (at wm (neighbour loc direction)))))
-        free-directions (filter free? DIRECTIONS)]
+        free-dirs (filter (fn [dir]
+                            (free? wm (neighbour loc dir)))
+                          DIRECTIONS)]
     (random-directions state
-                       free-directions)))
+                       free-dirs)))
 
 (defn main [initial-world ghost-ai]
   (pair 42 step))
