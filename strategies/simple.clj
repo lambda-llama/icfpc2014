@@ -52,7 +52,7 @@
                 (if (pred x) (pair x acc) acc))))
 
 (defn length [list]
-  (fold-left list 0 (fn [_x acc] (+ acc 1))))
+  (fold-left list 0 (fn [acc x] (+ acc 1))))
 
 ;; http://benchmarksgame.alioth.debian.org/u32/performance.php?test=fasta#about
 (defn random [seed max]
