@@ -15,6 +15,9 @@
 (defn not= [a b]
   (not (= a b)))
 
+(defn id [x]
+  x)
+
 ;;
 ;; stdlibza!
 
@@ -72,6 +75,9 @@
                     (pair x x-weight)
                     acc)))]
         (head (fold-right f (pair init-x init-weigth) list)))))
+
+(defn min [list]
+  (min-by id list))
 
 (defn length [list]
   (fold-left (fn [acc x] (+ acc 1)) 0 list))

@@ -82,25 +82,24 @@
                          free-dirs-no-back)]
     (random-directions state current-dir next-free-dirs free-locs ghosts)))
 
-(defn ghost-runaway [state current-dir free-dirs free-locs ghosts]
+(defn ghost-runaway [state current-dir free-dirs-locs ghosts]
   (let [ghost-locs (map location ghosts)
-        loc (head free-locs)
-        distances (trace (map (fn [ghost-loc] (distance loc ghost-loc)) ghost-locs))]
-    (pair state current-dir)))
+        dist-fn (fn [dir-loc]
+                  (min (map (fn [ghost-loc] (distance (snd dir-loc) ghost-loc)) ghost-locs)))
+        best-dir-loc (trace (min-by dist-fn free-dirs-locs))]
+    (pair state (fst best-dir-loc))))
 
 (defn step [state world]
   (let [lm (lambda-man world)
         wm (world-map world)
         loc (location lm)
-        free-dirs (filter (fn [dir]
-                            (free? wm (neighbour loc dir)))
-                          DIRECTIONS)
-        free-locs (map (fn [dir] (neighbour loc dir)) free-dirs)]
-    (random-directions-no-back state
-                               (direction lm)
-                               free-dirs
-                               free-locs
-                               (ghosts world))))
+        dirs-locs (map (fn [dir] (pair dir (neighbour loc dir)))
+                       DIRECTIONS)
+        free-dirs-locs (filter (fn [dl] (free? wm (snd dl))) dirs-locs)]
+    (ghost-runaway state
+                   (direction lm)
+                   free-dirs-locs
+                   (ghosts world))))
 
 (defn main [initial-world ghost-ai]
   (let [initial-state (sum-by (fn [program]
