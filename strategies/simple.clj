@@ -7,7 +7,7 @@
   (= (+ x y) 2))
 
 (defn or [x y]
-  (>= (+ x y)) 1)
+  (>= (+ x y) 1))
 
 (defn mod [x y]
   (- x (* y (/ x y))))
