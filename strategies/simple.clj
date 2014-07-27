@@ -139,10 +139,10 @@
         dirs-locs (map (fn [dir] (pair dir (neighbour loc dir)))
                        DIRECTIONS)
         free-dirs-locs (filter (fn [dl] (free? wm (snd dl))) dirs-locs)]
-    (random-directions-no-back state
-                               (direction lm)
-                               free-dirs-locs
-                               (ghosts world))))
+    (catch-ghosts wm state
+                  loc (direction lm)
+                  free-dirs-locs
+                  (ghosts world))))
 
 (defn main [initial-world ghost-ai]
   (let [initial-state (sum-by (fn [program]
