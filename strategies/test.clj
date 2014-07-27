@@ -1,7 +1,7 @@
 (defn assert [cond]
   (if cond
     92
-    (trace 11111111 92)))
+    (trace 11111111)))
 
 (defn main [x y]
   (let [l (list 1 2 3 4)
