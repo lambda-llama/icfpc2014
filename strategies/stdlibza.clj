@@ -50,10 +50,27 @@
     acc
     (fold-left f (f acc (head list)) (tail list))))
 
+(defn foldi-left [f acc list]
+  (snd (fold-left (fn [i-acc x]
+                    (let [i (fst i-acc)
+                          acc (snd i-acc)]
+                      (pair (inc i) (f i acc x))))
+                  (pair 0 acc) list)))
+
 (defn fold-right [f acc list]
   (if (empty? list)
     acc
     (f (head list) (fold-right f acc (tail list)))))
+
+(defn append [list1 list2]
+  (if (empty? list1)
+    list2
+    (if (empty? list2)
+      list1
+      (fold-right (fn [x acc] (pair x acc)) list2 list1))))
+
+(defn concat [lists]
+  (fold-right append 0 lists))
 
 (defn map [f list]
   (fold-right (fn [x acc] (pair (f x) acc)) 0 list))
