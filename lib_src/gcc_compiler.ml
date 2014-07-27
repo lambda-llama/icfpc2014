@@ -25,26 +25,27 @@ let rec lookup {vars; parent} v =
 
 type state = {
   functions : code list;
-  env       : env
+  env       : env;
+  is_call   : bool;
 }
 
+let reset state = {state with is_call = false}
 
-let add_fn label code ret {functions; env} =
+let add_fn label code ret state =
   let wrapped_code = LABEL label :: code @ [ret] in
-  {functions = wrapped_code::functions;
-   env = env}
+  {state with functions = wrapped_code :: state.functions;}
 
 let rec compile_expr expr state =
   let bin_op e1 e2 op =
-    let c1, s1 = compile_expr e1 state in
+    let c1, s1 = compile_expr e1 (reset state) in
     let c2, s2 = compile_expr e2 s1 in
     c1 @ c2 @ [op], s2
   in match expr with
     | Const x -> [LDC x], state
     | Debug (p, e) ->
-      let (cp, sp) = compile_expr p state in
-      let (ce, se) = compile_expr e sp in
-      cp @ [DBUG] @ ce, se
+       let (cp, sp) = compile_expr p (reset state) in
+       let (ce, se) = compile_expr e sp in
+       cp @ [DBUG] @ ce, se
     | Add (e1, e2)  -> bin_op e1 e2 ADD
     | Sub (e1, e2)  -> bin_op e1 e2 SUB
     | Mul (e1, e2)  -> bin_op e1 e2 MUL
@@ -54,41 +55,45 @@ let rec compile_expr expr state =
     | Gt (e1, e2)   -> bin_op e1 e2 CGT
     | Gte (e1, e2)  -> bin_op e1 e2 CGTE
     | Atom e ->
-      let (c, s) = compile_expr e state in
-      c @ [ATOM], s
+       let (c, s) = compile_expr e (reset state) in
+       c @ [ATOM], s
     | Fn (formals, e)-> compile_func formals e state
     | Var var ->
        let (e, i) = lookup state.env var in
        [COMMENT var; LD (e, i)], state
     | If (cond, t, f) ->
-      let (cond_code, s1) = compile_expr cond state in
-      let (true_code, s2) = compile_expr t s1 in
-      let (false_code, s3) = compile_expr f s2 in
-      let true_addr = Address.create ()
-      and false_addr = Address.create () in
-      (cond_code @ [SEL (true_addr, false_addr)],
-       add_fn true_addr true_code JOIN s3
-       |> add_fn false_addr false_code JOIN)
+       let (cond_code, s1) = compile_expr cond (reset state) in
+       let (true_code, s2) = compile_expr t s1 in
+       let (false_code, s3) = compile_expr f s2 in
+       let true_addr = Address.create ()
+       and false_addr = Address.create () in
+       (cond_code @ [if state.is_call
+                     then TSEL (true_addr, false_addr)
+                     else SEL (true_addr, false_addr)],
+        add_fn true_addr true_code (if state.is_call then RTN else JOIN) s3
+        |> add_fn false_addr false_code (if state.is_call then RTN else JOIN))
     | Call (fn_expr, actuals) ->
        let (actuals_code, s1) = List.fold_left actuals
-           ~init: ([], state)
+           ~init: ([], reset state)
            ~f:(fun (code, state) e ->
                let (c, s1) = compile_expr e state in
                (code @ c, s1))
        in
        let (fn_code, s2) = compile_expr fn_expr s1 in
-       (actuals_code @ fn_code @ [AP (List.length actuals)], s2)
+       (actuals_code @ fn_code @ [if state.is_call
+                                  then (TAP (List.length actuals))
+                                  else (AP (List.length actuals)) ], s2)
     | Car expr ->
-      let (tuple_expr, f) = compile_expr expr state in
-      (tuple_expr @ [CAR]), f
+       let (tuple_expr, f) = compile_expr expr (reset state) in
+       (tuple_expr @ [CAR]), f
     | Cdr expr ->
-      let (tuple_expr, f) = compile_expr expr state in
-      (tuple_expr @ [CDR]), f
+       let (tuple_expr, f) = compile_expr expr (reset state) in
+       (tuple_expr @ [CDR]), f
     | Letrec (bindings, body) ->
       let n = List.length bindings in
       let names = List.map ~f:fst bindings in
       let rec_env = push_vars state.env names in
-      let rec_state = {functions = state.functions; env = rec_env} in
+      let rec_state = {state with env = rec_env; is_call = false} in
       let (vals_code, s1) = List.fold_left bindings
           ~init: ([], rec_state)
           ~f:(fun (code, state) (_name, e) ->
@@ -96,21 +101,24 @@ let rec compile_expr expr state =
               (code @ c, s1))
       in
       let id = Address.create () in
-      let s2 = {functions = s1.functions; env = Option.value_exn s1.env.parent} in
+      let s2 = {s1 with env = Option.value_exn s1.env.parent} in
       let (fn_code, s3) = compile_func names body s2 in
-      DUM n :: vals_code @ fn_code @ [RAP n], s3
+      DUM n :: vals_code @ fn_code @ [if state.is_call
+                                      then TRAP n
+                                      else  RAP n], s3
 
 and compile_func formals expr {functions; env} =
   let id = Address.create () in
   let e_env = push_vars env formals in
-  let e_state = {functions = functions; env = e_env} in
+  let e_state = {functions = functions; env = e_env; is_call = true} in
   let code, {functions = fns1; _} = compile_expr expr e_state in
-  [LDF id], add_fn id code RTN {functions = fns1; env=env}
+  [LDF id], add_fn id code RTN {functions = fns1; env=env; is_call = false}
 
 let compile expr =
   let initial_state = {
     functions = [];
-    env = {vars = ["initial-world"; "ghost-ai"]; parent = None}
+    env = {vars = ["initial-world"; "ghost-ai"]; parent = None};
+    is_call = false;
   } in
 
   let (code, state) = compile_expr expr initial_state in
@@ -153,10 +161,13 @@ let assemble instructions =
       | COMMENT c -> "; " ^ c
       | LD (i, j) -> sprintf "LD %d %d" i j
       | SEL (addr1, addr2) -> sprintf "SEL %d %d" (resolve addr1) (resolve addr2)
+      | TSEL (addr1, addr2) -> sprintf "TSEL %d %d" (resolve addr1) (resolve addr2)
       | LDF addr -> sprintf "LDF %d" (resolve addr)
       | AP n -> sprintf "AP %d" n
+      | TAP n -> sprintf "TAP %d" n
       | DUM n -> sprintf "DUM %d" n
       | RAP n -> sprintf "RAP %d" n
+      | TRAP n -> sprintf "TRAP %d" n
       | _ ->
         let sexp = Sexp.to_string (sexp_of_instruction instruction) in
         failwithf "unsupported instruction %s" sexp ()
