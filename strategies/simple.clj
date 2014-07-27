@@ -29,6 +29,11 @@
 (defn at [world-map xy]
   (nth (nth world-map (tail xy)) (head xy)))
 
+(defn distance [xy1 xy2]
+  (let [dx (- (head xy2) (head xy1))
+        dy (- (tail xy2) (tail xy1))]
+    (+ (* dx dx) (* dy dy))))
+
 (defn neighbour [loc direction]
   (let [x (head loc)
         y (tail loc)]
@@ -55,10 +60,11 @@
 (defn free? [wm loc]
   (not= WALL (at wm loc)))
 
+
 ;;
 ;; logika
 
-(defn random-directions [state free-dirs]
+(defn random-directions [state current-dir free-dirs free-locs ghosts]
   (let [df (length free-dirs)]
     (if (= df 1)
       (pair state (head free-dirs))
@@ -67,7 +73,7 @@
             random-dir (nth free-dirs (tail random-data))]
         (pair next-state random-dir)))))
 
-(defn ghost-runaway [state current-dir free-dirs ghosts]
+(defn ghost-runaway [state current-dir free-dirs free-locs ghosts]
   (let [ghost-locs (map location ghosts)]
     (pair state current-dir)))
 
@@ -77,9 +83,13 @@
         loc (location lm)
         free-dirs (filter (fn [dir]
                             (free? wm (neighbour loc dir)))
-                          DIRECTIONS)]
+                          DIRECTIONS)
+        free-locs (map (fn [dir] (neighbour loc dir)) free-dirs)]
     (random-directions state
-                       free-dirs)))
+                       (direction lm)
+                       free-dirs
+                       free-locs
+                       (ghosts world))))
 
 (def initial-state
   42)
