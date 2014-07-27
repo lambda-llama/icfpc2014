@@ -62,8 +62,8 @@
       (let [init-x (head list)
             init-weigth (key init-x)
             f (fn [x acc]
-                (let [el (head acc)
-                      weight (tail acc)
+                (let [el (fst acc)
+                      weight (snd acc)
                       x-weight (key x)]
                   (if (< x-weight weight)
                     (pair x x-weight)
