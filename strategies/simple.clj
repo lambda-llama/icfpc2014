@@ -34,6 +34,12 @@
         dy (- (tail xy2) (tail xy1))]
     (+ (* dx dx) (* dy dy))))
 
+(defn min-distance [base-loc target-locs]
+  (min (map (fn [target-loc]
+              (distance base-loc target-loc))
+            target-locs)))
+
+
 (defn neighbour [loc direction]
   (let [x (head loc)
         y (tail loc)]
@@ -118,18 +124,16 @@
                                 (fn [dl] (not= (fst dl) (back (back current-dir))))
                                 free-dirs-locs)
         next-free-dirs-locs (if (empty? free-dirs-locs-no-back)
-                         free-dirs-locs
-                         free-dirs-locs-no-back)]
+                              free-dirs-locs
+                              free-dirs-locs-no-back)]
     (random-directions state current-dir next-free-dirs-locs ghosts)))
 
 (defn catch-ghosts [wm state
                     current-loc current-dir
                     free-dirs-locs ghosts]
   (let [ghost-locs (map location ghosts)
-        dist-fn (fn [dir-loc]
-                  (min (map (fn [ghost-loc] (distance (snd dir-loc) ghost-loc)) ghost-locs)))
-        best-dir-loc (min-by dist-fn free-dirs-locs)
-        t (trace (bfs wm current-loc ghost-locs))]
+        best-dir-loc (min-by (fn [dir-loc] (min-distance (snd dir-loc) ghost-locs))
+                             free-dirs-locs)]
     (pair state (fst best-dir-loc))))
 
 (defn step [state world]
