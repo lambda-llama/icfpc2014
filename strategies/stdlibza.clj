@@ -82,11 +82,30 @@
 (defn min [list]
   (min-by id list))
 
+(defn reverse [list]
+  (fold-left (fn [acc x] (pair x acc)) 0 list))
+
 (defn length [list]
   (fold-left (fn [acc x] (+ acc 1)) 0 list))
+
 
 ;; http://benchmarksgame.alioth.debian.org/u32/performance.php?test=fasta#about
 (defn random [seed max]
   (let [im 139968
         new-seed (mod (+ (* seed 3877) 29573) im)]
     (pair new-seed (/ (* max seed) im))))
+
+
+(defn queue [] (pair 0 0))
+
+(defn queue-push [q x]
+  (let [front (fst q)
+        back (snd q)]
+    (pair front (pair x back))))
+
+(defn queue-pop [q]
+  (let [front (fst q)
+        back (snd q)]
+    (if (empty? front)
+      (queue-pop (pair (reverse back) 0))
+      (pair (head front) (pair (tail front) back)))))

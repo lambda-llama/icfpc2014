@@ -8,6 +8,7 @@
         test-length (assert (= 4 (length l)))
         test-map (trace (map (fn [x] (+ x x)) l))
         test-filter (trace (filter (fn [x] (< 3 x)) l))
+        test-reverse (trace (reverse l))
         test-min-by (assert (= -3 (min-by (fn [x] (* x x))
                                           (list 20 -3 -10 10 ))))]
     l))
