@@ -10,4 +10,4 @@ let () =
     let expr = expr_of_sexp sexp in
     let open Gcc_compiler in
     compile expr |> assemble |> print_endline
-  with e -> sexp_of_exn e |> Sexp.to_string |> print_endline
+  with e -> sexp_of_exn e |> Sexp.to_string |> prerr_endline
