@@ -23,7 +23,7 @@
                                              (pair (* i x) acc)) 0 l))
         test-append (trace (append l k))
         test-concat (trace (concat (list l k l)))
-        tq (trace (test-queue))
+        tq (assert (= 24 (test-queue)))
         test-min-by (assert (= -3 (min-by (fn [x] (* x x))
                                           (list 20 -3 -10 10 ))))]
     l))

@@ -56,10 +56,7 @@ let rec compile_expr expr state =
     | Atom e ->
       let (c, s) = compile_expr e state in
       c @ [ATOM], s
-    | Fn (formals, e)->
-      let id = Address.create () in
-      let s1 = compile_func id formals e state in
-      [LDF id], s1
+    | Fn (formals, e)-> compile_func formals e state
     | Var var ->
        let (e, i) = lookup state.env var in
        [COMMENT var; LD (e, i)], state
@@ -100,14 +97,15 @@ let rec compile_expr expr state =
       in
       let id = Address.create () in
       let s2 = {functions = s1.functions; env = Option.value_exn s1.env.parent} in
-      let s3 = compile_func id names body s2 in
-      DUM n :: vals_code @ [LDF id] @ [RAP n], s3
+      let (fn_code, s3) = compile_func names body s2 in
+      DUM n :: vals_code @ fn_code @ [RAP n], s3
 
-and compile_func id formals expr {functions; env} =
+and compile_func formals expr {functions; env} =
+  let id = Address.create () in
   let e_env = push_vars env formals in
   let e_state = {functions = functions; env = e_env} in
   let code, {functions = fns1; _} = compile_expr expr e_state in
-  add_fn id code RTN {functions = fns1; env=env}
+  [LDF id], add_fn id code RTN {functions = fns1; env=env}
 
 let compile expr =
   let initial_state = {
