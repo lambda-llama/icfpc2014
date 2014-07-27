@@ -21,6 +21,11 @@
 (defn neg [x]
   (- 0 x))
 
+(defn abs [x]
+  (if (> x 0)
+    x
+    (neg x)))
+
 ;;
 ;; stdlibza!
 

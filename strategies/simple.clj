@@ -34,7 +34,7 @@
 (defn distance [xy1 xy2]
   (let [dx (- (head xy2) (head xy1))
         dy (- (tail xy2) (tail xy1))]
-    (+ (* dx dx) (* dy dy))))
+    (+ (abs dx) (abs dy))))
 
 (defn min-distance [base-loc target-locs]
   (min (map (fn [target-loc]
@@ -148,7 +148,7 @@
                          current-loc current-dir
                          free-dirs-locs ghosts]
   (let [ghost-locs (map location ghosts)
-        ghost-distance (min-distance current-loc ghost-locs)]
+        ghost-distance (trace (min-distance current-loc ghost-locs))]
     (if (< ghost-distance 3)
       (catch-or-avoid-ghosts
        wm state current-loc current-dir free-dirs-locs ghosts 1)
