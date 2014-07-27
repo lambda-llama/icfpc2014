@@ -112,7 +112,7 @@ and compile_func id formals expr {functions; env} =
 let compile expr =
   let initial_state = {
     functions = [];
-    env = {vars = ["world"; "undocumented"]; parent = None}
+    env = {vars = ["initial-world"; "ghost-ai"]; parent = None}
   } in
 
   let (code, state) = compile_expr expr initial_state in
