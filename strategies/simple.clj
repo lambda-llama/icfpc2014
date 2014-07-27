@@ -74,7 +74,9 @@
         (pair next-state random-dir)))))
 
 (defn ghost-runaway [state current-dir free-dirs free-locs ghosts]
-  (let [ghost-locs (map location ghosts)]
+  (let [ghost-locs (map location ghosts)
+        loc (head free-locs)
+        distances (trace (map (fn [ghost-loc] (distance loc ghost-loc)) ghost-locs))]
     (pair state current-dir)))
 
 (defn step [state world]
@@ -85,11 +87,11 @@
                             (free? wm (neighbour loc dir)))
                           DIRECTIONS)
         free-locs (map (fn [dir] (neighbour loc dir)) free-dirs)]
-    (random-directions state
-                       (direction lm)
-                       free-dirs
-                       free-locs
-                       (ghosts world))))
+    (ghost-runaway state
+                   (direction lm)
+                   free-dirs
+                   free-locs
+                   (ghosts world))))
 
 (def initial-state
   42)
