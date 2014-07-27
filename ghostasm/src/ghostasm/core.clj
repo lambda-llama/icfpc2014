@@ -153,7 +153,8 @@
    (jmp (label lbl))])
 
 (defn return []
-  (MOV :pc :h))
+  (MOV :pc :h)
+  (MOV :h (label :crash)))
 
 (defn int-by-name [name]
   (INT (pl/safe-get {:direction 0
@@ -181,7 +182,19 @@
      (MOV :a (at :c))
      (MOV :b :c)
      (label :min-loop-end)
-     (int-by-name :dbg)
+     ;; (MOV (at 210) :a)
+     ;; (MOV (at 211) :b)
+     ;; (MOV (at 212) :c)
+     ;; (MOV (at 213) :d)
+     ;; (MOV :a (at 0))
+     ;; (MOV :b (at 1))
+     ;; (MOV :c (at 2))
+     ;; (MOV :d (at 3))
+     ;; (int-by-name :dbg)
+     ;; (MOV :a (at 210))
+     ;; (MOV :b (at 211))
+     ;; (MOV :c (at 212))
+     ;; (MOV :d (at 213))
      (JLT (label :min-loop-start) :c 3)
 
      (MOV :a :b)
@@ -190,6 +203,13 @@
      (INT 6)
      ;; (INC (at :b)) ;; change this
      (call-by-label :find-lambdaman)
+     (HLT)
+
+     (label :crash)
+     (MOV :a 42)
+     (MOV :b 42)
+     (MOV :c 42)
+     (int-by-name :dbg)
      (HLT)
 
      (label :find-lambdaman) ;; update first four adresses, uses a-d
@@ -202,23 +222,25 @@
      (MOV :c :a)
      (MOV :d :b) ;; a and b will be needed, x now in c, y in d
      (int-by-name :first-lambda) ;; x_lambda in a, y_lambda in b
-     (JLT (label :skip-increase-left) :a :c)  ;; if x_lambda < x, don't go left
+     (JGT (label :skip-increase-left) :a :c)  ;; if x_lambda > x, don't go left
      (INC (at 3))
      (label :skip-increase-left)
      (JLT (label :skip-increase-down) :b :d) ;; if y_lambda < y, don't go down
      (INC (at 2))
+     ;; (MOV :f (at 2))
+     ;; (int-by-name :dbg)
      (label :skip-increase-down)
-     (JGT (label :skip-increase-right) :a :c) ;; if x_lambda > x, don't go right
+     (JLT (label :skip-increase-right) :a :c) ;; if x_lambda < x, don't go right
      (INC (at 1))
      (label :skip-increase-right)
      (JGT (label :skip-increase-up) :b :d) ;; if y_lambda > y, don't go right
      (INC (at 0))
      (label :skip-increase-up)
-     (MOV :d (at 0))
-     (MOV :e (at 1))
-     (MOV :f (at 2))
-     (MOV :g (at 3))
-     #_(int-by-name :dbg)
+     ;; (MOV :d (at 0))
+     ;; (MOV :e (at 1))
+     ;; (MOV :f (at 2))
+     ;; (MOV :g (at 3))
+     ;; (int-by-name :dbg)
      (return)))))
 
 
