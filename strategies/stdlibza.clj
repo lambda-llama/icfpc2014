@@ -53,6 +53,18 @@
                 (if (pred x) (pair x acc) acc))
               0 list))
 
+(defn min-by [key list]
+  (if (empty? list)
+    (trace 667 667)
+    (head (fold-right (fn [x acc]
+                        (let [el (head acc)
+                              weight (tail acc)
+                              x-weight (key x)]
+                          (if (< x-weight weight)
+                            (pair x x-weight)
+                            acc)))
+                      (pair 666 1000000) list))))
+
 (defn length [list]
   (fold-left (fn [acc x] (+ acc 1)) 0 list))
 
