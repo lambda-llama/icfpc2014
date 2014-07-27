@@ -37,6 +37,15 @@
       (head list)
       (nth (tail list) (dec pos)))))
 
+(defn contains? [list elem]
+  (let [go (fn [acc]
+             (if (empty? acc)
+               0
+               (if (= (head acc) elem)
+                 1
+                 (go (tail acc)))))]
+    (go list)))
+
 ;; Returns the 0-based index of 'elem' in 'list'.
 (defn index [list elem]
   (let [index-in (fn [l p]
@@ -115,10 +124,19 @@
 
 (defn queue [] (pair 0 0))
 
+(defn queue-empty? [q]
+  (and (empty? (fst q))
+       (empty? (snd q))))
+
 (defn queue-push [q x]
   (let [front (fst q)
         back (snd q)]
     (pair front (pair x back))))
+
+(defn queue-push-all [q list]
+  (let [front (fst q)
+        back (snd q)]
+    (pair front (append list back))))
 
 (defn queue-pop [q]
   (let [front (fst q)
@@ -126,3 +144,15 @@
     (if (empty? front)
       (queue-pop (pair (reverse back) 0))
       (pair (head front) (pair (tail front) back)))))
+
+
+(defn set []
+  0)
+
+(defn set-contains? [s x]
+  (contains? s x))
+
+(defn set-add [s x]
+  (if (set-contains? s x)
+    s
+    (pair x s)))

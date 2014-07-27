@@ -60,11 +60,48 @@
 (defn free? [wm loc]
   (not= WALL (at wm loc)))
 
+(defn bfs [wm initial-loc target-locs]
+  (let [num-cols (length wm)
+        num-rows (length (head wm))
+        hash (fn [loc] (+ (* (inc (fst loc)) num-rows) (snd loc)))
+        target-hashes (map hash target-locs)
+        okay? (fn [loc]
+                     (let [mark (at wm loc)]
+                       (and (not= WALL mark)
+                            (not= GHOST mark))))
+        adjacent (fn [loc]
+                   (let [adjacent-locs (map (fn [dir] (neighbour loc dir))
+                                            DIRECTIONS)]
+                     (filter okay? adjacent-locs)))
+        go (fn [q seen acc depth]
+             (if (queue-empty? q)
+               acc
+               (let [p (queue-pop q)
+                     next-pair (fst p)  ;; (depth, loc)
+                     next-depth (fst next-pair)
+                     next (snd next-pair)
+                     next-hash (hash next)]
+                 ;; set is integer-only.
+                 (if (set-contains? seen next-hash)
+                   (go (snd p) seen acc depth)
+                   (let [new-seen (set-add seen next-hash)
+                         new-q (queue-push-all (snd p)
+                                               (map (fn [loc] (pair depth loc))
+                                                    (adjacent next)))
+                         new-acc (if (contains? target-hashes next-hash)
+                                   (let [i (index target-hashes next-hash)]
+                                     (pair (pair i next-depth) acc))
+                                   acc)]
+                     (go new-q new-seen new-acc (inc depth)))))))]
+    (let [q (queue-push (queue) (pair 0 initial-loc))]
+      (go q (set) 0 0))))
 
 ;;
 ;; logika
 
-(defn random-directions [state current-dir free-dirs-locs ghosts]
+(defn random-directions [wm state
+                         current-loc current-dir
+                         free-dirs-locs ghosts]
   (let [free-dirs (map fst free-dirs-locs)
         df (length free-dirs)]
     (if (= df 1)
@@ -74,7 +111,9 @@
             random-dir (nth free-dirs (tail random-data))]
         (pair next-state random-dir)))))
 
-(defn random-directions-no-back [state current-dir free-dirs-locs ghosts]
+(defn random-directions-no-back [wm state
+                                 current-loc current-dir
+                                 free-dirs-locs ghosts]
   (let [free-dirs-locs-no-back (filter
                                 (fn [dl] (not= (fst dl) (back (back current-dir))))
                                 free-dirs-locs)
@@ -83,11 +122,14 @@
                          free-dirs-locs-no-back)]
     (random-directions state current-dir next-free-dirs-locs ghosts)))
 
-(defn catch-ghosts [state current-dir free-dirs-locs ghosts]
+(defn catch-ghosts [wm state
+                    current-loc current-dir
+                    free-dirs-locs ghosts]
   (let [ghost-locs (map location ghosts)
         dist-fn (fn [dir-loc]
                   (min (map (fn [ghost-loc] (distance (snd dir-loc) ghost-loc)) ghost-locs)))
-        best-dir-loc (trace (min-by dist-fn free-dirs-locs))]
+        best-dir-loc (min-by dist-fn free-dirs-locs)
+        t (trace (bfs wm current-loc ghost-locs))]
     (pair state (fst best-dir-loc))))
 
 (defn step [state world]
