@@ -29,12 +29,41 @@
 (defn direction [actor] (nth actor 2))
 
 (defn at [world-map xy]
-  (nth (nth world-map (tail xy)) (head xy)))
+  (let [num-columns (length world-map)
+        num-rows (length (head world-map))
+        x (fst xy)
+        y (snd xy)]
+    (if (or (or (>= x num-rows) (< x 0))
+            (or (>= y num-columns) (< y 0)))
+      WALL
+      (nth (nth world-map y) x))))
 
 (defn distance [xy1 xy2]
   (let [dx (- (head xy2) (head xy1))
         dy (- (tail xy2) (tail xy1))]
     (+ (abs dx) (abs dy))))
+
+(defn direct [dir n]
+  (if (= dir LEFT)
+    (pair (neg n) 0)
+    (if (= dir RIGHT)
+      (pair n 0)
+      (if (= dir UP)
+        (pair 0 (neg n))
+        (pair 0 n)))))
+
+(defn move [loc d]
+  (pair (+ (fst loc) (fst d))
+        (+ (snd loc) (snd d))))
+
+(defn range [n]
+  (if (= n 0)
+    (pair 0 0)
+    (pair n (range (dec n)))))
+
+(defn peek [world-map xy dir n]
+  (map (fn [i] (at world-map (move xy (direct dir i))))
+       (range n)))
 
 (defn min-distance [base-loc target-locs]
   (min (map (fn [target-loc]
@@ -110,12 +139,23 @@
                          current-loc current-dir
                          free-dirs-locs ghosts]
   (let [free-dirs (map fst free-dirs-locs)
+        peeks (map (fn [dir-loc]
+                     (let [dir (fst dir-loc)]
+                       (inc (sum
+                             (filter (fn [p] (< p 5))
+                                     ;; 3-lookahead
+                                     (peek wm current-loc dir 3))))))
+                     free-dirs-locs)
+        cumulative-peeks (cumulative-sum peeks)
         df (length free-dirs)]
     (if (= df 1)
       (pair state (head free-dirs))
-      (let [random-data (random state df)
-            next-state (head random-data)
-            random-dir (nth free-dirs (tail random-data))]
+      (let [random-data (random state (sum peeks))
+            next-state (fst random-data)
+            random-peek (first (fn [s] (> s (snd random-data)))
+                               cumulative-peeks)
+            random-dir (nth free-dirs
+                            (index cumulative-peeks random-peek))]
         (pair next-state random-dir)))))
 
 (defn random-directions-no-back [wm state
@@ -148,7 +188,7 @@
                          current-loc current-dir
                          free-dirs-locs ghosts]
   (let [ghost-locs (map location ghosts)
-        ghost-distance (trace (min-distance current-loc ghost-locs))]
+        ghost-distance (min-distance current-loc ghost-locs)]
     (if (< ghost-distance 3)
       (catch-or-avoid-ghosts
        wm state current-loc current-dir free-dirs-locs ghosts 1)
@@ -167,7 +207,7 @@
                              free-dirs-locs
                              (ghosts world)
                              0)
-          (random-or-runaway wm state
+      (random-or-runaway wm state
                          loc (direction lm)
                          free-dirs-locs
                          (ghosts world)))))

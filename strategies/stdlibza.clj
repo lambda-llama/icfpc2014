@@ -97,6 +97,9 @@
 (defn sum-by [f list]
   (fold-left (fn [acc x] (+ acc (f x))) 0 list))
 
+(defn sum [list]
+  (sum-by id list))
+
 (defn min-by [key list]
   (if (empty? list) (trace 667)
       (let [init-x (head list)
@@ -119,6 +122,15 @@
 (defn length [list]
   (fold-left (fn [acc x] (+ acc 1)) 0 list))
 
+(defn cumulative-sum [list]
+  (tail
+   (reverse
+    (fold-left (fn [acc x] (pair (+ (head acc) x) acc))
+               (pair 0 0)
+               list))))
+
+(defn first [pred list]
+  (head (filter pred list)))
 
 ;; http://benchmarksgame.alioth.debian.org/u32/performance.php?test=fasta#about
 (defn random [seed max]

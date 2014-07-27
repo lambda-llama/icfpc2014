@@ -24,6 +24,8 @@
         test-append (trace (append l k))
         test-concat (trace (concat (list l k l)))
         tq (assert (= 24 (test-queue)))
+        test-cumsum (trace (cumulative-sum l))
+        test-first (trace (first (fn [x] (> x 3)) l))
         test-min-by (assert (= -3 (min-by (fn [x] (* x x))
                                           (list 20 -3 -10 10 ))))]
     l))
