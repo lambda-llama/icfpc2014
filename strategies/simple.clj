@@ -124,12 +124,12 @@
         (fn [state world]
           (let [lm (lambda-man world)
                 wm (world-map world)
-                gs (trace (map (ghosts world) direction))
+                gs (trace (map direction (ghosts world)))
                 loc (location lm)
                 dir (direction lm)
                 free? (fn [direction]
                         (not (= WALL (at wm (neighbour loc direction)))))
-                free-directions (filter DIRECTIONS free?)
+                free-directions (filter free? DIRECTIONS)
                 df (length free-directions)]
 
             (if (= df 1)
