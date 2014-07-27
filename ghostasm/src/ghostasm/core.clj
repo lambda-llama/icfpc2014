@@ -133,12 +133,22 @@
                 (pl/safe-get labels (:name arg)) ;; SAFE-GET HERE
                 arg)))))
 
+(defn line-enumerate-phase [lines]
+  (let [max-len (->> lines (map count) (reduce max 0))
+        target-len (+ max-len 2)]
+    (map-indexed
+     (fn [idx line]
+       (str line (apply str (repeat (- target-len (count line)) " "))
+           ";; " idx))
+     lines)))
+
 (defn asm-compile [insts]
   (let [code-by-str (->> insts
                          flatten
                          label-collect-phase
                          label-replace-phase
-                         (map formatter))
+                         (map formatter)
+                         line-enumerate-phase)
         code (s/join "\n" code-by-str)]
     (println (str "len: " (count code-by-str) "/256\n" ))
     code))
@@ -152,9 +162,11 @@
   [(MOV :h :pc) ;; return address in H register
    (jmp (label lbl))])
 
-(defn return []
-  (MOV :pc :h)
-  (MOV :h (label :crash)))
+(defn return [] ;; g and h are used
+  [(MOV :g :h)
+   (MOV :h (label :crash))
+   (ADD :g 2)
+   (MOV :pc :g)])
 
 (defn int-by-name [name]
   (INT (pl/safe-get {:direction 0
@@ -168,41 +180,75 @@
                      :dbg 8}
                     name)))
 
+(def mtx1 {:offset 30
+           :nrows 5
+           :ncols 5})
+
+(def mtx2 {:offset 100
+           :nrows 5
+           :ncols 5})
+
+(defn matrix-read [mtx i j] ;; leaves value at a
+  [(MOV :a i)
+   (MUL :a (:nrows mtx))
+   (ADD :a j)
+   (ADD :a (:offset mtx))
+   (MOV :a (at :a))])
+
+(defn matrix-write [mtx i j value]
+  [(MOV :a i)
+   (MUL :a (:nrows mtx))
+   (ADD :a j)
+   (ADD :a (:offset mtx))
+   (MOV (at :a) value)])
+
 (defn mytest []
   (println
    (asm-compile
     (asm
-     (MOV :a 0)
-     (MOV :b 0)
-     (MOV :c 255)
-
-     (label :min-loop-start)
-     (INC :c)
-     (JLT (label :min-loop-end) (at :c) :a)
-     (MOV :a (at :c))
-     (MOV :b :c)
-     (label :min-loop-end)
-     ;; (MOV (at 210) :a)
-     ;; (MOV (at 211) :b)
-     ;; (MOV (at 212) :c)
-     ;; (MOV (at 213) :d)
+     ;; (INC (at :b)) ;; change this
+     ;; (call-by-label :zero-out-directions)
+     ;; (call-by-label :find-lambdaman)
+     ;; #_(call-by-label :add-random)
+     ;; (call-by-label :move-to-min)
      ;; (MOV :a (at 0))
      ;; (MOV :b (at 1))
      ;; (MOV :c (at 2))
      ;; (MOV :d (at 3))
-     ;; (int-by-name :dbg)
-     ;; (MOV :a (at 210))
-     ;; (MOV :b (at 211))
-     ;; (MOV :c (at 212))
-     ;; (MOV :d (at 213))
-     (JLT (label :min-loop-start) :c 3)
-
-     (MOV :a :b)
-     (INT 0)
-     (INT 3)
-     (INT 6)
-     ;; (INC (at :b)) ;; change this
-     (call-by-label :find-lambdaman)
+     ;; 0 1 2 3 : directions
+     (int-by-name :first-lambda)
+     (MOV :c :a)
+     (MOV :d :b)
+     (int-by-name :my-index)
+     (int-by-name :current-pos)
+     (MOV :e :a)
+     (MOV :f :b)
+     ;; left
+     (DEC :e)
+     (call-by-label :find-h)
+     (MOV (at 3) :a)
+     ;; right
+     (ADD :e 2)
+     (call-by-label :find-h)
+     (MOV (at 1) :a)
+     ;; up
+     (DEC :e)
+     (DEC :f)
+     (call-by-label :find-h)
+     (MOV (at 0) :a)
+     ;; down
+     (ADD :f 2)
+     (call-by-label :find-h)
+     (MOV (at 2) :a)
+     (int-by-name :my-index)
+     (int-by-name :current-pos)
+     (MOV :e :a)
+     (MOV :f :b)
+     (MOV :a (at 0))
+     (MOV :b (at 1))
+     (MOV :c (at 2))
+     (MOV :d (at 3))
+     (int-by-name :dbg)
      (HLT)
 
      (label :crash)
@@ -212,11 +258,57 @@
      (int-by-name :dbg)
      (HLT)
 
-     (label :find-lambdaman) ;; update first four adresses, uses a-d
+     (label :find-h) ;; assumes c and d are lambda_coords, e and f are coords
+                     ;; uses a-b; returns heuristic in a
+     (MOV :a :e)
+     (MOV :b :f)
+     (int-by-name :map)
+     (JGT (label :find-h-nowall) :a 0)
+     (MOV :a 255)
+     (return)
+     (label :find-h-nowall)
+     (JGT (label :find-h-x-larger) :e :c)
+     (MOV :a :c)
+     (SUB :a :e)
+     (jmp (label :find-h-x-done))
+     (label :find-h-x-larger)
+     (MOV :a :e)
+     (SUB :a :c)
+     (label :find-h-x-done)
+     (JGT (label :find-h-y-larger) :f :d)
+     (MOV :b :d)
+     (SUB :b :f)
+     (jmp (label :find-h-y-done))
+     (label :find-h-y-larger)
+     (MOV :b :f)
+     (SUB :b :d)
+     (label :find-h-y-done)
+     (ADD :a :b)
+     (return)
+
+     (label :move-to-min) ;; uses a-c
+     (MOV :a 255)
+     (MOV :b 0)
+     (MOV :c 255)
+     (label :min-loop-start)
+     (INC :c)
+     (JGT (label :min-loop-end) (at :c) :a)
+     (MOV :a (at :c))
+     (MOV :b :c)
+     (label :min-loop-end)
+     (JLT (label :min-loop-start) :c 3)
+     (MOV :a :b)
+     (INT 0)
+     (return)
+
+     (label :zero-out-directions)
      (MOV (at 0) 0)
      (MOV (at 1) 0)
      (MOV (at 2) 0)
      (MOV (at 3) 0)
+     (return)
+
+     (label :find-lambdaman) ;; update first four adresses, uses a-d
      (int-by-name :my-index) ;; index in a
      (int-by-name :current-pos) ;; x in a, y in b
      (MOV :c :a)
@@ -227,8 +319,6 @@
      (label :skip-increase-left)
      (JLT (label :skip-increase-down) :b :d) ;; if y_lambda < y, don't go down
      (INC (at 2))
-     ;; (MOV :f (at 2))
-     ;; (int-by-name :dbg)
      (label :skip-increase-down)
      (JLT (label :skip-increase-right) :a :c) ;; if x_lambda < x, don't go right
      (INC (at 1))
@@ -236,12 +326,28 @@
      (JGT (label :skip-increase-up) :b :d) ;; if y_lambda > y, don't go right
      (INC (at 0))
      (label :skip-increase-up)
-     ;; (MOV :d (at 0))
-     ;; (MOV :e (at 1))
-     ;; (MOV :f (at 2))
-     ;; (MOV :g (at 3))
-     ;; (int-by-name :dbg)
-     (return)))))
+     (XOR (at 0) 1)
+     (XOR (at 1) 1)
+     (XOR (at 2) 1)
+     (XOR (at 3) 1)
+     (return)
+
+     (label :add-random) ;; uses a-c
+     (MOV :c (at 254))   ;; random seed
+     (ADD :c 3)
+     (int-by-name :my-index) ;; index in a
+     (ADD :c :a)
+     (int-by-name :current-pos)
+     (ADD :c :a)
+     (int-by-name :first-lambda)
+     (ADD :c :a)
+     (AND :c 3)
+     (MOV (at 254) :c)
+     (INC (at :c))
+     (return)
+
+
+     ))))
 
 
 (defn -main
