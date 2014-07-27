@@ -154,6 +154,7 @@
             next-state (fst random-data)
             random-peek (first (fn [s] (> s (snd random-data)))
                                cumulative-peeks)
+
             random-dir (nth free-dirs
                             (index cumulative-peeks random-peek))]
         (pair next-state random-dir)))))

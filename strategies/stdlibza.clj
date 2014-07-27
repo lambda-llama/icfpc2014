@@ -133,10 +133,11 @@
   (head (filter pred list)))
 
 ;; http://en.wikipedia.org/wiki/Linear_congruential_generator
+;; minstd_rand
 (defn random [seed max]
-  (let [im 139968
-        ia 3877
-        ic 29573
+  (let [im 2147483647
+        ia 48271
+        ic 0
         new-seed (mod (+ (* seed ia) ic) im)]
     (pair new-seed (/ (* max seed) im))))
 
