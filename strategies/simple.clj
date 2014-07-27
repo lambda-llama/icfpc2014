@@ -85,7 +85,7 @@
 (defn ghost-runaway [state current-dir free-dirs-locs ghosts]
   (let [ghost-locs (map location ghosts)
         dist-fn (fn [dir-loc]
-                  (min (map (fn [ghost-loc] (distance (snd dir-loc) ghost-loc)) ghost-locs)))
+                  (min (map (fn [ghost-loc] (neg (distance (snd dir-loc) ghost-loc))) ghost-locs)))
         best-dir-loc (trace (min-by dist-fn free-dirs-locs))]
     (pair state (fst best-dir-loc))))
 

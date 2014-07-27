@@ -18,6 +18,9 @@
 (defn id [x]
   x)
 
+(defn neg [x]
+  (- 0 x))
+
 ;;
 ;; stdlibza!
 
