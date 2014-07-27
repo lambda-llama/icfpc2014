@@ -124,8 +124,7 @@
         (fn [state world]
           (let [lm (lambda-man world)
                 wm (world-map world)
-                ggs (trace (ghosts world))
-                gs (trace (map direction (ghosts world)))
+                gs (ghosts world)
                 loc (location lm)
                 dir (direction lm)
                 free? (fn [direction]
@@ -134,7 +133,7 @@
                 df (length free-directions)]
 
             (if (= df 1)
-              (pair state (head df))
+              (pair state (head directions))
               (let [random-data (random state df)
                     next-state (head random-data)
                     random-dir (nth free-directions (tail random-data))]
