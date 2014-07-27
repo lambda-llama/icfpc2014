@@ -81,5 +81,8 @@
     (random-directions state
                        free-dirs)))
 
+(def initial-state
+  42)
+
 (defn main [initial-world ghost-ai]
-  (pair 42 step))
+  (pair initial-state step))
