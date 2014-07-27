@@ -4,4 +4,4 @@ else
     pbin="pbcopy"
 fi
 
-cat ./strategies/stdlib.clj $@ | java -jar ./tosexp.jar | ./gcc.native | $pbin
+cat ./strategies/stdlibza.clj $@ | java -jar ./tosexp.jar | ./gcc.native | $pbin

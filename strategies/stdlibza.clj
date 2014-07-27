@@ -12,6 +12,8 @@
 (defn mod [x y]
   (- x (* y (/ x y))))
 
+(defn not= [a b]
+  (not (= a b)))
 
 ;;
 ;; stdlibza!
