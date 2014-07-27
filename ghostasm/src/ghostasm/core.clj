@@ -158,15 +158,20 @@
 
 (declare int-by-name)
 
+(defn init []
+  (MOV :h 255))
+
 (defn call-by-label [lbl]
-  [(MOV :h :pc) ;; return address in H register
+  [(DEC :h)  ;; h points on top of call stack
+   (MOV (at :h) :pc)
+   (ADD (at :h) 3) ;; return address should point on the next instruction
    (jmp (label lbl))])
 
 (defn return [] ;; g and h are used
   [(MOV :g :h)
-   (MOV :h (label :crash))
-   (ADD :g 2)
-   (MOV :pc :g)])
+   (INC :h)
+   (JLT (label :crash) :h :g) ;; check if h overflowed
+   (MOV :pc (at :g))])
 
 (defn int-by-name [name]
   (INT (pl/safe-get {:direction 0
@@ -216,6 +221,28 @@
      ;; (MOV :c (at 2))
      ;; (MOV :d (at 3))
      ;; 0 1 2 3 : directions
+     (init)
+
+     (call-by-label :find-hs-around)
+     (int-by-name :my-index)
+     (int-by-name :current-pos)
+     (MOV :e :a)
+     (MOV :f :b)
+     (MOV :a (at 0))
+     (MOV :b (at 1))
+     (MOV :c (at 2))
+     (MOV :d (at 3))
+     (int-by-name :dbg)
+     (HLT)
+
+     (label :crash)
+     (MOV :a 42)
+     (MOV :b 42)
+     (MOV :c 42)
+     (int-by-name :dbg)
+     (HLT)
+
+     (label :find-hs-around) ;; doesn't assume anything, leaves hs in 0..4
      (int-by-name :first-lambda)
      (MOV :c :a)
      (MOV :d :b)
@@ -240,23 +267,7 @@
      (ADD :f 2)
      (call-by-label :find-h)
      (MOV (at 2) :a)
-     (int-by-name :my-index)
-     (int-by-name :current-pos)
-     (MOV :e :a)
-     (MOV :f :b)
-     (MOV :a (at 0))
-     (MOV :b (at 1))
-     (MOV :c (at 2))
-     (MOV :d (at 3))
-     (int-by-name :dbg)
-     (HLT)
-
-     (label :crash)
-     (MOV :a 42)
-     (MOV :b 42)
-     (MOV :c 42)
-     (int-by-name :dbg)
-     (HLT)
+     (return)
 
      (label :find-h) ;; assumes c and d are lambda_coords, e and f are coords
                      ;; uses a-b; returns heuristic in a
@@ -345,6 +356,7 @@
      (MOV (at 254) :c)
      (INC (at :c))
      (return)
+
 
 
      ))))
