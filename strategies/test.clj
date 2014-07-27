@@ -3,6 +3,15 @@
     (trace 0)
     (trace -1)))
 
+(defn test-queue []
+  (let [q0 (queue)
+        q1 (queue-push q0 42)
+        q2 (queue-push q1 24)
+        q3 (queue-push q2 13)
+        p0 (queue-pop q3)
+        p1 (queue-pop (snd p0))]
+    (fst p1))) ;; 24
+
 (defn main [x y]
   (let [l (list 1 2 3 4)
         k (list 5 6 7)
@@ -14,6 +23,7 @@
                                              (pair (* i x) acc)) 0 l))
         test-append (trace (append l k))
         test-concat (trace (concat (list l k l)))
+        tq (trace (test-queue))
         test-min-by (assert (= -3 (min-by (fn [x] (* x x))
                                           (list 20 -3 -10 10 ))))]
     l))
