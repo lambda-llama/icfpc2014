@@ -119,22 +119,24 @@
 ;;
 ;; logika
 
-(defn main [initial-world ghost-ai]
-  (pair 42
-        (fn [state world]
-          (let [lm (lambda-man world)
-                wm (world-map world)
-                gs (ghosts world)
-                loc (location lm)
-                dir (direction lm)
-                free? (fn [direction]
-                        (not (= WALL (at wm (neighbour loc direction)))))
-                free-directions (filter free? DIRECTIONS)
-                df (length free-directions)]
+(defn random-directions [state free-directions]
+  (let [df (length free-directions)]
+    (if (= df 1)
+      (pair state (head free-directions))
+      (let [random-data (random state df)
+            next-state (head random-data)
+            random-direction (nth free-directions (tail random-data))]
+        (pair next-state random-direction)))))
 
-            (if (= df 1)
-              (pair state (head free-directions))
-              (let [random-data (random state df)
-                    next-state (head random-data)
-                    random-dir (nth free-directions (tail random-data))]
-                (pair next-state random-dir)))))))
+(defn step [state world]
+  (let [lm (lambda-man world)
+        wm (world-map world)
+        loc (location lm)
+        free? (fn [direction]
+                (not (= WALL (at wm (neighbour loc direction)))))
+        free-directions (filter free? DIRECTIONS)]
+    (random-directions state
+                       free-directions)))
+
+(defn main [initial-world ghost-ai]
+  (pair 42 step))
