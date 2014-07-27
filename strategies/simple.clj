@@ -53,7 +53,7 @@
       (nth DIRECTIONS (dec pos)))))
 
 (defn free? [wm loc]
-  (not (= WALL (at wm loc))))
+  (not= WALL (at wm loc)))
 
 ;;
 ;; logika
