@@ -33,26 +33,26 @@
                       (index-in (tail l) (inc p))))]
     (index-in list 0)))
 
-(defn fold-left [list acc f]
+(defn fold-left [f acc list]
   (if (empty? list)
     acc
-    (fold-left (tail list) (f acc (head list)) f)))
+    (fold-left f (f acc (head list)) (tail list))))
 
-(defn fold-right [list acc f]
+(defn fold-right [f acc list]
   (if (empty? list)
     acc
-    (f (head list) (fold-right (tail list) acc f))))
+    (f (head list) (fold-right f acc (tail list)))))
 
-(defn map [list f]
-  (fold-right list 0 (fn [x acc] (pair (f x) acc))))
+(defn map [f list]
+  (fold-right (fn [x acc] (pair (f x) acc)) 0 list))
 
-(defn filter [list pred]
-  (fold-right list 0
-              (fn [x acc]
-                (if (pred x) (pair x acc) acc))))
+(defn filter [pred list]
+  (fold-right (fn [x acc]
+                (if (pred x) (pair x acc) acc))
+              0 list))
 
 (defn length [list]
-  (fold-left list 0 (fn [acc x] (+ acc 1))))
+  (fold-left (fn [acc x] (+ acc 1)) 0 list))
 
 ;; http://benchmarksgame.alioth.debian.org/u32/performance.php?test=fasta#about
 (defn random [seed max]
@@ -124,7 +124,7 @@
         (fn [state world]
           (let [lm (lambda-man world)
                 wm (world-map world)
-                gs (trace (nth (head (ghosts world)) 2))
+                gs (trace (map (ghosts world) direction))
                 loc (location lm)
                 dir (direction lm)
                 free? (fn [direction]
