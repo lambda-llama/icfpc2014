@@ -24,8 +24,10 @@
 (defn lambda-man [world] (nth world 1))
 (defn ghosts [world] (nth world 2))
 (defn fruit [world] (nth world 3))
+(defn vitality [actor] (head actor))
 (defn location [actor] (nth actor 1))
 (defn direction [actor] (nth actor 2))
+
 (defn at [world-map xy]
   (nth (nth world-map (tail xy)) (head xy)))
 
@@ -160,10 +162,15 @@
         dirs-locs (map (fn [dir] (pair dir (neighbour loc dir)))
                        DIRECTIONS)
         free-dirs-locs (filter (fn [dl] (free? wm (snd dl))) dirs-locs)]
-    (random-or-runaway wm state
-                       loc (direction lm)
-                       free-dirs-locs
-                       (ghosts world))))
+    (if (vitality lm)
+      (catch-or-avoid-ghosts wm state loc (direction lm)
+                             free-dirs-locs
+                             (ghosts world)
+                             0)
+          (random-or-runaway wm state
+                         loc (direction lm)
+                         free-dirs-locs
+                         (ghosts world)))))
 
 (defn main [initial-world ghost-ai]
   (let [initial-state (sum-by (fn [program]
