@@ -132,10 +132,12 @@
 (defn first [pred list]
   (head (filter pred list)))
 
-;; http://benchmarksgame.alioth.debian.org/u32/performance.php?test=fasta#about
+;; http://en.wikipedia.org/wiki/Linear_congruential_generator
 (defn random [seed max]
   (let [im 139968
-        new-seed (mod (+ (* seed 3877) 29573) im)]
+        ia 3877
+        ic 29573
+        new-seed (mod (+ (* seed ia) ic) im)]
     (pair new-seed (/ (* max seed) im))))
 
 
