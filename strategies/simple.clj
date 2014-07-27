@@ -52,7 +52,7 @@
                 (if (pred x) (pair x acc) acc))))
 
 (defn length [list]
-  (fold-left list 0 (fn [x _acc] (+ acc 1))))
+  (fold-left list 0 (fn [_x acc] (+ acc 1))))
 
 ;; http://benchmarksgame.alioth.debian.org/u32/performance.php?test=fasta#about
 (defn random [seed max]
@@ -124,7 +124,7 @@
         (fn [state world]
           (let [lm (lambda-man world)
                 wm (world-map world)
-                gs (trace (ghosts world))
+                gs (trace (map direction (ghosts world)))
                 loc (location lm)
                 dir (direction lm)
                 free? (fn [direction]
