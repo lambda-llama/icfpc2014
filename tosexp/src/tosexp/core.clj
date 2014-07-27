@@ -17,10 +17,10 @@
    '* 'Mul
    '/ 'Div
    '= 'Eq
-   '< 'Gt
-   '<= 'Gte
-   '> [:inverted 'Gt]
-   '>= [:inverted 'Gte]
+   '> 'Gt
+   '>= 'Gte
+   '< [:inverted 'Gt]
+   '<= [:inverted 'Gte]
    'pair 'Cons
    'debug 'Debug})
 
