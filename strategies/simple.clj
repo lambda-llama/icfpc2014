@@ -20,7 +20,7 @@
 
 (defn nth [list pos]
   (if (empty? list)
-    (trace 666)  ;; impossibru!
+    0  ;; this way we can query tuples with '0' as last element.
     (if (= pos 0)
       (head list)
       (nth (tail list) (dec pos)))))
@@ -124,7 +124,7 @@
         (fn [state world]
           (let [lm (lambda-man world)
                 wm (world-map world)
-                gs (trace (map direction (ghosts world)))
+                gs (trace (nth (head (ghosts world)) 2))
                 loc (location lm)
                 dir (direction lm)
                 free? (fn [direction]
