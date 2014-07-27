@@ -39,7 +39,6 @@
               (distance base-loc target-loc))
             target-locs)))
 
-
 (defn neighbour [loc direction]
   (let [x (head loc)
         y (tail loc)]
@@ -126,15 +125,33 @@
         next-free-dirs-locs (if (empty? free-dirs-locs-no-back)
                               free-dirs-locs
                               free-dirs-locs-no-back)]
-    (random-directions state current-dir next-free-dirs-locs ghosts)))
+    (random-directions wm state
+                       current-loc current-dir
+                       next-free-dirs-locs ghosts)))
 
-(defn catch-ghosts [wm state
-                    current-loc current-dir
-                    free-dirs-locs ghosts]
+(defn catch-or-avoid-ghosts [wm state
+                             current-loc current-dir
+                             free-dirs-locs ghosts
+                             avoid?]
   (let [ghost-locs (map location ghosts)
-        best-dir-loc (min-by (fn [dir-loc] (min-distance (snd dir-loc) ghost-locs))
+        best-dir-loc (min-by (fn [dir-loc]
+                               (let [d (min-distance (snd dir-loc) ghost-locs)]
+                                 (if avoid?
+                                   (neg d)
+                                   d)))
                              free-dirs-locs)]
     (pair state (fst best-dir-loc))))
+
+(defn random-or-runaway [wm state
+                         current-loc current-dir
+                         free-dirs-locs ghosts]
+  (let [ghost-locs (map location ghosts)
+        ghost-distance (min-distance current-loc ghost-locs)]
+    (if (< ghost-distance 3)
+      (catch-or-avoid-ghosts
+       wm state current-loc current-dir free-dirs-locs ghosts 1)
+      (random-directions-no-back
+       wm state current-loc current-dir free-dirs-locs ghosts))))
 
 (defn step [state world]
   (let [lm (lambda-man world)
@@ -143,10 +160,10 @@
         dirs-locs (map (fn [dir] (pair dir (neighbour loc dir)))
                        DIRECTIONS)
         free-dirs-locs (filter (fn [dl] (free? wm (snd dl))) dirs-locs)]
-    (catch-ghosts wm state
-                  loc (direction lm)
-                  free-dirs-locs
-                  (ghosts world))))
+    (random-or-runaway wm state
+                       loc (direction lm)
+                       free-dirs-locs
+                       (ghosts world))))
 
 (defn main [initial-world ghost-ai]
   (let [initial-state (sum-by (fn [program]
